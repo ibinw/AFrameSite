@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        .container {
+            position: relative;
+            width: 600px;
+            margin: 0 auto;
+        }
+        
+        #frame {
+            width: 100%;
+            position: absolute;
+            z-index: 2;
+            pointer-events: none;
+        }
+        
+        #userImage {
+            position: absolute;
+            z-index: 1;
+            top: 50px;
+            left: 50px;
+            width: 500px;
+            height: 400px;
+            object-fit: contain;
+        }
+        
+        #uploadBtn {
+            padding: 20px;
+            background: #eee;
+            cursor: pointer;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div id="uploadBtn">点击上传图片 (JPEG/PNG)</div>
+    
+    <div class="container">
+        <img id="userImage">
+        <img id="frame" src="https://example.com/frame.png"> <!-- 替换为你的画框图片URL -->
+    </div>
+
+    <script>
+        const frame = document.getElementById('frame');
+        const userImage = document.getElementById('userImage');
+        const uploadBtn = document.getElementById('uploadBtn');
+        
+        // 处理文件上传
+        uploadBtn.addEventListener('click', () => {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = 'image/png, image/jpeg';
+            
+            input.onchange = e => {
+                const file = e.target.files[0];
+                const reader = new FileReader();
+                
+                reader.onload = e => {
+                    userImage.src = e.target.result;
+                };
+                
+                reader.readAsDataURL(file);
+            };
+            
+            input.click();
+        });
+    </script>
+</body>
+</html>
