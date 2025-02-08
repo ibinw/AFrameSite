@@ -1,69 +1,148 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Photo Frame Upload</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
-        .container {
+        .hero {
             position: relative;
-            width: 600px;
-            margin: 0 auto;
-        }
-        
-        #frame {
+            height: 100vh;
             width: 100%;
-            position: absolute;
-            z-index: 2;
-            pointer-events: none;
+            overflow: hidden;
+            background-color: #f5f5f5;
         }
         
-        #userImage {
+        #bgvideo {
             position: absolute;
-            z-index: 1;
-            top: 50px;
-            left: 50px;
-            width: 500px;
-            height: 400px;
-            object-fit: contain;
+            top: 50%;
+            left: 50%;
+            min-width: 100%;
+            min-height: 100%;
+            transform: translate(-50%, -50%);
+            z-index: -1;
+            display: none;
         }
         
-        #uploadBtn {
-            padding: 20px;
-            background: #eee;
+        #bgvideo[src] {
+            display: block;
+        }
+        
+        .slogan-title {
+            text-align: center;
+            color: #002856;
+            font-size: 48px;
+            font-weight: bold;
+            margin-top: 30vh;
+            padding: 0 20px;
+        }
+        
+        .slogan-start {
+            text-align: center;
+            margin-top: 30px;
+        }
+        
+        .upload-button {
+            display: inline-block;
+            background-color: #FFD700;
+            color: #002856;
+            font-weight: bold;
+            padding: 12px 30px;
+            border-radius: 25px;
+            border: none;
+            font-size: 16px;
             cursor: pointer;
-            margin-bottom: 20px;
+            transition: all 0.3s ease;
+        }
+        
+        .upload-button:hover {
+            background-color: #002856;
+            color: #ffffff;
+        }
+
+        /* Hide the default file input */
+        #fileInput {
+            display: none;
+        }
+
+        /* Loading screen styles */
+        .loading-screen {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.9);
+            z-index: 1000;
+            text-align: center;
+            padding-top: 20%;
+        }
+
+        .loading-spinner {
+            border: 5px solid #f3f3f3;
+            border-radius: 50%;
+            border-top: 5px solid #002856;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
     </style>
 </head>
 <body>
-    <div id="uploadBtn">点击上传图片 (JPEG/PNG)</div>
-    
-    <div class="container">
-        <img id="userImage">
-        <img id="frame" src="https://example.com/frame.png"> <!-- 替换为你的画框图片URL -->
+    <div class="hero">
+        <video playsinline autoplay muted loop id="bgvideo">
+            <source src="assets/background.mp4" type="video/mp4">
+        </video>
+        
+        <div class="slogan-title">
+            Your photos printed, framed, and delivered
+        </div>
+        
+        <div class="slogan-start">
+            <input type="file" id="fileInput" accept="image/*">
+            <button class="upload-button" onclick="document.getElementById('fileInput').click()">
+                Upload Your Photo
+            </button>
+        </div>
+    </div>
+
+    <!-- Loading Screen -->
+    <div class="loading-screen" id="loadingScreen">
+        <div class="loading-spinner"></div>
+        <h4 style="font-size: 30px; color: #002856;">
+            Processing your image...
+        </h4>
+        <p>Please wait while we prepare your frame options...</p>
     </div>
 
     <script>
-        const frame = document.getElementById('frame');
-        const userImage = document.getElementById('userImage');
-        const uploadBtn = document.getElementById('uploadBtn');
-        
-        // 处理文件上传
-        uploadBtn.addEventListener('click', () => {
-            const input = document.createElement('input');
-            input.type = 'file';
-            input.accept = 'image/png, image/jpeg';
-            
-            input.onchange = e => {
+        document.getElementById('fileInput').addEventListener('change', function(e) {
+            if (e.target.files && e.target.files[0]) {
                 const file = e.target.files[0];
-                const reader = new FileReader();
                 
-                reader.onload = e => {
-                    userImage.src = e.target.result;
-                };
-                
-                reader.readAsDataURL(file);
-            };
-            
-            input.click();
+                // Show loading screen
+                document.getElementById('loadingScreen').style.display = 'block';
+
+                // Create a URL for the uploaded image
+                const imageUrl = URL.createObjectURL(file);
+
+                // Store the image URL in localStorage
+                localStorage.setItem('uploadedImage', imageUrl);
+
+                // Simulate processing time
+                setTimeout(() => {
+                    // Redirect to frames page
+                    window.location.href = 'frames.html';
+                }, 2000);
+            }
         });
     </script>
 </body>
