@@ -8,18 +8,31 @@
     <style>
         .frame-preview {
             position: relative;
-            width: 600px;
-            height: 400px;
+            width: 717px;  /* Half of 1436px for reasonable display size */
+            height: 865px; /* Half of 1730px to maintain aspect ratio */
             margin: 50px auto;
+            overflow: hidden;
+            cursor: pointer;
+        }
+
+        .uploaded-image-container {
+            position: absolute;
+            width: calc(100% - 160px);
+            height: calc(100% - 320px);
+            top: 160px;
+            left: 80px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
         }
 
         .uploaded-image {
-            position: absolute;
-            width: 80%;
-            height: 80%;
-            top: 10%;
-            left: 10%;
+            max-width: 100%;
+            max-height: 100%;
             object-fit: contain;
+            width: auto;
+            height: auto;
         }
 
         .frame-overlay {
@@ -58,19 +71,30 @@
             background-color: #002856;
             color: #ffffff;
         }
+
+        .clickable-content {
+            cursor: pointer;
+            transition: opacity 0.3s ease;
+        }
+
+        .clickable-content:hover {
+            opacity: 0.9;
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <div class="frame-preview">
-            <img id="uploadedImage" class="uploaded-image" src="" alt="Your photo">
-            <img class="frame-overlay" src="assets/frames/classic-black.png" alt="Frame">
+        <div class="frame-preview clickable-content" onclick="window.location.href='frame-detail.html'">
+            <div class="uploaded-image-container">
+                <img id="uploadedImage" class="uploaded-image" src="" alt="Your photo">
+            </div>
+            <img class="frame-overlay" src="assests/frames/frame_test_1.png" alt="Frame" onerror="this.onerror=null; console.error('Frame image failed to load');">
         </div>
 
-        <div class="frame-details">
-            <h2>Classic Black Frame</h2>
+        <div class="frame-details clickable-content" onclick="window.location.href='frame-detail.html'">
+            <h2>Classic Frame</h2>
             <p class="price">$69.99</p>
-            <button class="add-to-cart">Add to Cart</button>
+            <button class="add-to-cart" onclick="event.stopPropagation(); window.location.href='frame-detail.html'">View Details</button>
         </div>
     </div>
 
@@ -81,16 +105,31 @@
                 const uploadedImage = document.getElementById('uploadedImage');
                 uploadedImage.src = uploadedImageBase64;
                 
+                uploadedImage.onload = function() {
+                    const container = document.querySelector('.uploaded-image-container');
+                    const containerAspect = container.offsetWidth / container.offsetHeight;
+                    const imageAspect = this.naturalWidth / this.naturalHeight;
+
+                    if (imageAspect > containerAspect) {
+                        // Image is wider than container
+                        this.style.width = '100%';
+                        this.style.height = 'auto';
+                    } else {
+                        // Image is taller than container
+                        this.style.width = 'auto';
+                        this.style.height = '100%';
+                    }
+                };
+                
                 uploadedImage.onerror = function() {
                     console.error('Error loading image');
                     alert('Error loading your image. Please try uploading again.');
                     window.location.href = 'index.html';
                 };
             } else {
-                console.log('No image found in localStorage');
                 window.location.href = 'index.html';
             }
-        }
+        };
     </script>
 </body>
 </html> 
