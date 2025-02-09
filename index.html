@@ -134,8 +134,9 @@
                 // Read file as Base64
                 const reader = new FileReader();
                 reader.onload = function(e) {
-                    // Store the Base64 string
+                    // Store both versions of the image
                     localStorage.setItem('uploadedImage', e.target.result);
+                    localStorage.setItem('originalImage', e.target.result);
                     console.log('Image saved:', localStorage.getItem('uploadedImage').substring(0, 100) + '...');
                     
                     // Simulate processing time

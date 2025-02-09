@@ -120,6 +120,7 @@
 
             <button class="btn-control" onclick="rotateImage(-90)">↶ Rotate Left</button>
             <button class="btn-control" onclick="rotateImage(90)">↷ Rotate Right</button>
+            <button class="btn-control" onclick="resetToOriginal()">Reset to Original</button>
             <button class="btn-control btn-save" onclick="saveAdjustments()">Save Changes</button>
         </div>
     </div>
@@ -137,73 +138,102 @@
         let cropper;
         let currentRotation = 0;
         let currentZoom = 1;
+        let transparentArea;
         const MIN_ZOOM = 0.5;
         const MAX_ZOOM = 3;
 
         window.onload = async function() {
-            const uploadedImageBase64 = localStorage.getItem('uploadedImage');
+            const uploadedImageBase64 = localStorage.getItem('originalImage');
+            const savedAdjustments = localStorage.getItem('adjustmentData');
+            
             if (uploadedImageBase64) {
                 const frameOverlay = document.querySelector('.frame-overlay');
                 const container = document.querySelector('.preview-container');
                 const image = document.getElementById('image');
                 
-                // Wait for frame transparent area detection
-                const transparentArea = await detectTransparentArea(frameOverlay.src);
+                transparentArea = await detectTransparentArea(frameOverlay.src);
                 
-                // Set container position and size based on detected area
                 container.style.width = `${transparentArea.innerWidth}px`;
                 container.style.height = `${transparentArea.innerHeight}px`;
                 container.style.top = `${transparentArea.y}px`;
                 container.style.left = `${transparentArea.x}px`;
                 
-                // Set image source
                 image.src = uploadedImageBase64;
                 
                 image.onload = function() {
-                    cropper = new Cropper(image, {
-                        viewMode: 1,
+                    const cropperOptions = {
+                        viewMode: 2,
                         dragMode: 'move',
                         aspectRatio: NaN,
                         autoCropArea: 1,
                         restore: false,
-                        modal: false,
+                        modal: true,
                         guides: false,
+                        center: true,
                         highlight: false,
                         cropBoxMovable: false,
                         cropBoxResizable: false,
                         toggleDragModeOnDblclick: false,
                         wheelZoomRatio: 0.1,
+                        minContainerWidth: transparentArea.innerWidth,
+                        minContainerHeight: transparentArea.innerHeight,
+                        background: true,
+                        movable: true,
+                        rotatable: true,
+                        scalable: true,
+                        zoomable: true,
+                        zoomOnTouch: true,
+                        zoomOnWheel: true,
                         zoom: function(event) {
                             currentZoom = event.detail.ratio;
-                            if (currentZoom >= MIN_ZOOM && currentZoom <= MAX_ZOOM) {
-                                document.getElementById('zoom').value = currentZoom;
-                                return true;
+                            if (currentZoom < MIN_ZOOM) {
+                                event.preventDefault();
+                                cropper.zoomTo(MIN_ZOOM);
+                            } else if (currentZoom > MAX_ZOOM) {
+                                event.preventDefault();
+                                cropper.zoomTo(MAX_ZOOM);
                             } else {
-                                currentZoom = Math.min(Math.max(currentZoom, MIN_ZOOM), MAX_ZOOM);
-                                return false;
+                                document.getElementById('zoom').value = currentZoom;
                             }
                         }
-                    });
+                    };
+
+                    cropper = new Cropper(image, cropperOptions);
+
+                    if (savedAdjustments) {
+                        try {
+                            const adjustments = JSON.parse(savedAdjustments);
+                            
+                            setTimeout(() => {
+                                if (adjustments.rotate !== undefined) {
+                                    currentRotation = adjustments.rotate;
+                                    cropper.rotateTo(currentRotation);
+                                }
+                                
+                                if (adjustments.zoom !== undefined) {
+                                    currentZoom = adjustments.zoom;
+                                    cropper.zoomTo(currentZoom);
+                                    document.getElementById('zoom').value = currentZoom;
+                                }
+                                
+                                if (adjustments.x !== undefined && adjustments.y !== undefined) {
+                                    cropper.setCanvasData({
+                                        left: adjustments.x,
+                                        top: adjustments.y,
+                                        width: adjustments.width,
+                                        height: adjustments.height
+                                    });
+                                }
+                            }, 300);
+                        } catch (error) {
+                            console.error('Error restoring adjustments:', error);
+                        }
+                    }
                 };
             } else {
                 window.location.href = 'index.html';
             }
         };
-
-        // Zoom control with slider
-        document.getElementById('zoom').addEventListener('input', function(e) {
-            if (cropper) {
-                currentZoom = parseFloat(e.target.value);
-                cropper.zoomTo(currentZoom);
-            }
-        });
-
-        // Prevent default scroll behavior when cursor is over the image
-        document.querySelector('.image-container').addEventListener('wheel', function(e) {
-            if (cropper) {
-                e.preventDefault();
-            }
-        }, { passive: false });
 
         function rotateImage(degrees) {
             if (cropper) {
@@ -212,25 +242,110 @@
             }
         }
 
+        function resetToOriginal() {
+            const originalImage = localStorage.getItem('originalImage');
+            if (originalImage && cropper) {
+                cropper.destroy();
+                
+                const image = document.getElementById('image');
+                image.src = originalImage;
+                
+                image.onload = function() {
+                    cropper = new Cropper(image, {
+                        viewMode: 2,
+                        dragMode: 'move',
+                        aspectRatio: NaN,
+                        autoCropArea: 1,
+                        restore: false,
+                        modal: true,
+                        guides: false,
+                        center: true,
+                        highlight: false,
+                        cropBoxMovable: false,
+                        cropBoxResizable: false,
+                        toggleDragModeOnDblclick: false,
+                        wheelZoomRatio: 0.1,
+                        minContainerWidth: transparentArea.innerWidth,
+                        minContainerHeight: transparentArea.innerHeight,
+                        background: true,
+                        movable: true,
+                        rotatable: true,
+                        scalable: true,
+                        zoomable: true,
+                        zoomOnTouch: true,
+                        zoomOnWheel: true,
+                        zoom: function(event) {
+                            currentZoom = event.detail.ratio;
+                            if (currentZoom < MIN_ZOOM) {
+                                event.preventDefault();
+                                cropper.zoomTo(MIN_ZOOM);
+                            } else if (currentZoom > MAX_ZOOM) {
+                                event.preventDefault();
+                                cropper.zoomTo(MAX_ZOOM);
+                            } else {
+                                document.getElementById('zoom').value = currentZoom;
+                            }
+                        }
+                    });
+                };
+                
+                currentRotation = 0;
+                currentZoom = 1;
+                document.getElementById('zoom').value = 1;
+            }
+        }
+
         function saveAdjustments() {
             if (cropper) {
                 document.querySelector('.loading-screen').style.display = 'flex';
                 
-                // Get the cropped canvas
-                const canvas = cropper.getCroppedCanvas();
+                const canvasData = cropper.getCanvasData();
+                const imageData = cropper.getImageData();
                 
-                // Convert to base64
-                const adjustedImage = canvas.toDataURL('image/jpeg');
+                const adjustmentData = {
+                    x: canvasData.left,
+                    y: canvasData.top,
+                    width: canvasData.width,
+                    height: canvasData.height,
+                    rotate: currentRotation,
+                    zoom: currentZoom,
+                    naturalWidth: imageData.naturalWidth,
+                    naturalHeight: imageData.naturalHeight
+                };
                 
-                // Save to localStorage
+                const canvas = cropper.getCroppedCanvas({
+                    width: transparentArea.innerWidth,
+                    height: transparentArea.innerHeight,
+                    imageSmoothingEnabled: true,
+                    imageSmoothingQuality: 'high'
+                });
+                
+                const adjustedImage = canvas.toDataURL('image/jpeg', 1.0);
+                
                 localStorage.setItem('uploadedImage', adjustedImage);
+                localStorage.setItem('adjustmentData', JSON.stringify(adjustmentData));
                 
-                // Simulate processing time
                 setTimeout(() => {
                     window.location.href = 'frame-detail.html';
-                }, 1500);
+                }, 500);
             }
         }
+
+        document.getElementById('zoom').addEventListener('input', function(e) {
+            if (cropper) {
+                const newZoom = parseFloat(e.target.value);
+                if (newZoom >= MIN_ZOOM && newZoom <= MAX_ZOOM) {
+                    currentZoom = newZoom;
+                    cropper.zoomTo(newZoom);
+                }
+            }
+        });
+
+        document.querySelector('.image-container').addEventListener('wheel', function(e) {
+            if (cropper) {
+                e.preventDefault();
+            }
+        }, { passive: false });
     </script>
 </body>
 </html> 

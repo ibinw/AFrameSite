@@ -13,8 +13,12 @@ function detectTransparentArea(frameSrc) {
     });
 }
 
-async function initializeFramePreview(frameOverlay, container, uploadedImage) {
-    const uploadedImageBase64 = localStorage.getItem('uploadedImage');
+function initializeFramePreview(frameOverlay, container, uploadedImage) {
+    // Use originalImage if we're on adjust-photo.html, otherwise use uploadedImage
+    const isAdjustPage = window.location.pathname.includes('adjust-photo.html');
+    const imageKey = isAdjustPage ? 'originalImage' : 'uploadedImage';
+    const uploadedImageBase64 = localStorage.getItem(imageKey);
+
     if (uploadedImageBase64) {
         try {
             // Set container position and size based on fixed dimensions
