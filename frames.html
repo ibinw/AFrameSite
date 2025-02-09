@@ -88,7 +88,7 @@
             <div class="uploaded-image-container">
                 <img id="uploadedImage" class="uploaded-image" src="" alt="Your photo">
             </div>
-            <img class="frame-overlay" src="assests/frames/frame_test_1.png" alt="Frame" onerror="this.onerror=null; console.error('Frame image failed to load');">
+            <img class="frame-overlay" src="assets/frames/frame_test_1.png" alt="Frame" onerror="this.onerror=null; console.error('Frame image failed to load');">
         </div>
 
         <div class="frame-details clickable-content" onclick="window.location.href='frame-detail.html'">
@@ -98,35 +98,20 @@
         </div>
     </div>
 
+    <script src="src/utils/frameUtils.js"></script>
     <script>
-        window.onload = function() {
-            const uploadedImageBase64 = localStorage.getItem('uploadedImage');
-            if (uploadedImageBase64) {
-                const uploadedImage = document.getElementById('uploadedImage');
-                uploadedImage.src = uploadedImageBase64;
-                
-                uploadedImage.onload = function() {
-                    const container = document.querySelector('.uploaded-image-container');
-                    const containerAspect = container.offsetWidth / container.offsetHeight;
-                    const imageAspect = this.naturalWidth / this.naturalHeight;
-
-                    if (imageAspect > containerAspect) {
-                        // Image is wider than container
-                        this.style.width = '100%';
-                        this.style.height = 'auto';
-                    } else {
-                        // Image is taller than container
-                        this.style.width = 'auto';
-                        this.style.height = '100%';
-                    }
-                };
-                
-                uploadedImage.onerror = function() {
-                    console.error('Error loading image');
-                    alert('Error loading your image. Please try uploading again.');
-                    window.location.href = 'index.html';
-                };
-            } else {
+        window.onload = async function() {
+            const frameOverlay = document.querySelector('.frame-overlay');
+            const container = document.querySelector('.uploaded-image-container');
+            const uploadedImage = document.getElementById('uploadedImage');
+            
+            // Add debug logging
+            console.log('localStorage has image:', !!localStorage.getItem('uploadedImage'));
+            
+            const success = await initializeFramePreview(frameOverlay, container, uploadedImage);
+            console.log('Initialize result:', success);
+            
+            if (!success) {
                 window.location.href = 'index.html';
             }
         };

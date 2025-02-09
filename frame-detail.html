@@ -27,10 +27,6 @@
 
         .uploaded-image-container {
             position: absolute;
-            width: calc(100% - 160px);
-            height: calc(100% - 320px);
-            top: 160px;
-            left: 80px;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -118,14 +114,14 @@
                     <div class="uploaded-image-container">
                         <img id="uploadedImage" class="uploaded-image" src="" alt="Your photo">
                     </div>
-                    <img class="frame-overlay" src="assests/frames/frame_test_1.png" alt="Frame">
+                    <img class="frame-overlay" src="assets/frames/frame_test_1.png" alt="Frame">
                 </div>
             </div>
             
             <div class="thumbnail-preview">
-                <img class="thumbnail" src="assests/frames/frame_test_1.png" onclick="updateMainImage(this.src)">
-                <img class="thumbnail" src="assests/frames/frame_sample.webp" onclick="updateMainImage(this.src)">
-                <img class="thumbnail" src="assests/frames/frame_sample2.jpg" onclick="updateMainImage(this.src)">
+                <img class="thumbnail" src="assets/frames/frame_test_1.png" onclick="updateMainImage(this.src)">
+                <img class="thumbnail" src="assets/frames/frame_sample.webp" onclick="updateMainImage(this.src)">
+                <img class="thumbnail" src="assets/frames/frame_sample2.jpg" onclick="updateMainImage(this.src)">
             </div>
         </div>
 
@@ -152,27 +148,15 @@
         </div>
     </div>
 
+    <script src="src/utils/frameUtils.js"></script>
     <script>
-        window.onload = function() {
-            const uploadedImageBase64 = localStorage.getItem('uploadedImage');
-            if (uploadedImageBase64) {
-                const uploadedImage = document.getElementById('uploadedImage');
-                uploadedImage.src = uploadedImageBase64;
-                
-                uploadedImage.onload = function() {
-                    const container = document.querySelector('.uploaded-image-container');
-                    const containerAspect = container.offsetWidth / container.offsetHeight;
-                    const imageAspect = this.naturalWidth / this.naturalHeight;
-
-                    if (imageAspect > containerAspect) {
-                        this.style.width = '100%';
-                        this.style.height = 'auto';
-                    } else {
-                        this.style.width = 'auto';
-                        this.style.height = '100%';
-                    }
-                };
-            } else {
+        window.onload = async function() {
+            const frameOverlay = document.querySelector('.frame-overlay');
+            const container = document.querySelector('.uploaded-image-container');
+            const uploadedImage = document.getElementById('uploadedImage');
+            
+            const success = await initializeFramePreview(frameOverlay, container, uploadedImage);
+            if (!success) {
                 window.location.href = 'index.html';
             }
         };

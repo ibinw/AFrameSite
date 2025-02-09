@@ -109,7 +109,7 @@
             <div class="preview-container">
                 <img id="image" src="" alt="Your photo">
             </div>
-            <img class="frame-overlay" src="assests/frames/frame_test_1.png" alt="Frame">
+            <img class="frame-overlay" src="assets/frames/frame_test_1.png" alt="Frame">
         </div>
 
         <div class="controls">
@@ -132,6 +132,7 @@
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js"></script>
+    <script src="src/utils/frameUtils.js"></script>
     <script>
         let cropper;
         let currentRotation = 0;
@@ -139,10 +140,23 @@
         const MIN_ZOOM = 0.5;
         const MAX_ZOOM = 3;
 
-        window.onload = function() {
+        window.onload = async function() {
             const uploadedImageBase64 = localStorage.getItem('uploadedImage');
             if (uploadedImageBase64) {
+                const frameOverlay = document.querySelector('.frame-overlay');
+                const container = document.querySelector('.preview-container');
                 const image = document.getElementById('image');
+                
+                // Wait for frame transparent area detection
+                const transparentArea = await detectTransparentArea(frameOverlay.src);
+                
+                // Set container position and size based on detected area
+                container.style.width = `${transparentArea.innerWidth}px`;
+                container.style.height = `${transparentArea.innerHeight}px`;
+                container.style.top = `${transparentArea.y}px`;
+                container.style.left = `${transparentArea.x}px`;
+                
+                // Set image source
                 image.src = uploadedImageBase64;
                 
                 image.onload = function() {
@@ -158,15 +172,13 @@
                         cropBoxMovable: false,
                         cropBoxResizable: false,
                         toggleDragModeOnDblclick: false,
-                        wheelZoomRatio: 0.1, // More precise zoom with wheel
+                        wheelZoomRatio: 0.1,
                         zoom: function(event) {
-                            // Update currentZoom and slider when zooming with wheel
                             currentZoom = event.detail.ratio;
                             if (currentZoom >= MIN_ZOOM && currentZoom <= MAX_ZOOM) {
                                 document.getElementById('zoom').value = currentZoom;
                                 return true;
                             } else {
-                                // Prevent zooming outside our limits
                                 currentZoom = Math.min(Math.max(currentZoom, MIN_ZOOM), MAX_ZOOM);
                                 return false;
                             }

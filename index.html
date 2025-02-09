@@ -136,6 +136,7 @@
                 reader.onload = function(e) {
                     // Store the Base64 string
                     localStorage.setItem('uploadedImage', e.target.result);
+                    console.log('Image saved:', localStorage.getItem('uploadedImage').substring(0, 100) + '...');
                     
                     // Simulate processing time
                     setTimeout(() => {
