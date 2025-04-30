@@ -100,6 +100,13 @@
       infoSection.innerHTML = [imgInfo, frameInfo, transparentInfo, aspectInfo, cropInfo].join('<br>');
     }
 
+    function syncZoomSliderWithCropper() {
+      if (!cropper) return;
+      const imageData = cropper.getImageData();
+      const zoom = imageData.width / imageData.naturalWidth;
+      zoomSlider.value = zoom;
+    }
+
     imgInput.addEventListener('change', function(e) {
       const file = e.target.files[0];
       const imgErrorMsg = document.getElementById('imgErrorMsg');
@@ -146,6 +153,9 @@
               };
               this.cropper.setCropBoxData(cropBoxData);
               resetZoomSlider();
+            },
+            zoom(event) {
+              syncZoomSliderWithCropper();
             }
           });
           cropBtn.disabled = false;
@@ -184,6 +194,9 @@
           };
           this.cropper.setCropBoxData(cropBoxData);
           resetZoomSlider();
+        },
+        zoom(event) {
+          syncZoomSliderWithCropper();
         }
       });
       cropBtn.disabled = false;
