@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Browse Frames</title>
+    <style>
+        body { 
+            font-family: sans-serif; 
+            background: #222; 
+            color: #eee; 
+            margin: 0;
+            padding: 20px;
+        }
+        .frames-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 30px;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .frame-item {
+            text-align: center;
+            text-decoration: none;
+            color: #eee;
+        }
+        .frame-image {
+            width: 100%;
+            aspect-ratio: 1;
+            background: #333;
+            margin-bottom: 15px;
+            border: 1px solid #444;
+        }
+        .frame-name {
+            font-size: 18px;
+            margin: 0;
+            color: #eee;
+        }
+        .frame-details {
+            font-size: 14px;
+            color: #999;
+            margin: 5px 0;
+        }
+        .frame-price {
+            font-size: 16px;
+            color: #eee;
+            margin: 5px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="frames-grid">
+        <!-- First Frame - Links to current frame preview -->
+        <a href="photocropping_newattempt.html" class="frame-item">
+            <div class="frame-image">
+                <img src="assets/frames/frame_test_2.png" alt="Classic Frame" style="width: 100%; height: 100%; object-fit: contain;">
+            </div>
+            <h3 class="frame-name">Classic Frame</h3>
+            <div class="frame-details">10" x 8" frame</div>
+            <div class="frame-price">$49</div>
+        </a>
+
+        <!-- Placeholder Frame 2 -->
+        <a href="#" class="frame-item">
+            <div class="frame-image"></div>
+            <h3 class="frame-name">Modern Frame</h3>
+            <div class="frame-details">9" x 9" frame</div>
+            <div class="frame-price">$45</div>
+        </a>
+
+        <!-- Placeholder Frame 3 -->
+        <a href="#" class="frame-item">
+            <div class="frame-image"></div>
+            <h3 class="frame-name">Vintage Frame</h3>
+            <div class="frame-details">11" x 9" frame</div>
+            <div class="frame-price">$69</div>
+        </a>
+
+        <!-- Placeholder Frame 4 -->
+        <a href="#" class="frame-item">
+            <div class="frame-image"></div>
+            <h3 class="frame-name">Minimalist Frame</h3>
+            <div class="frame-details">10" x 10" frame</div>
+            <div class="frame-price">$55</div>
+        </a>
+
+        <!-- Placeholder Frame 5 -->
+        <a href="#" class="frame-item">
+            <div class="frame-image"></div>
+            <h3 class="frame-name">Rustic Frame</h3>
+            <div class="frame-details">12" x 8" frame</div>
+            <div class="frame-price">$59</div>
+        </a>
+    </div>
+</body>
+</html>
