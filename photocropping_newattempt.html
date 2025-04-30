@@ -9,7 +9,7 @@
     #cropping-area { margin: 20px auto; }
     .placeholder { margin: 20px; color: #888; }
     .controls { margin: 20px; }
-    .back-button, #reEditBtn {
+    .back-button, #reEditBtn, #clearBtn {
       background: #444;
       color: #eee;
       border: none;
@@ -18,10 +18,10 @@
       cursor: pointer;
       margin-right: 10px;
     }
-    .back-button:hover, #reEditBtn:hover {
+    .back-button:hover, #reEditBtn:hover, #clearBtn:hover {
       background: #555;
     }
-    #reEditBtn:disabled {
+    #reEditBtn:disabled, #clearBtn:disabled {
       opacity: 0.5;
       cursor: not-allowed;
     }
@@ -44,6 +44,7 @@
         <button id="testImgBtn" type="button">Test Image</button>
         <button id="cropBtn" disabled>Crop & Place in Frame</button>
         <button id="reEditBtn" disabled>Re-edit Image</button>
+        <button id="clearBtn" disabled>Clear Image</button>
         <br/>
         <label for="zoomSlider" id="zoomSliderLabel">Zoom:</label>
         <input type="range" id="zoomSlider" min="1" max="3" step="0.01" value="1" style="width:200px;">
@@ -93,6 +94,9 @@
 
     // Add reEditBtn to the elements section
     const reEditBtn = document.getElementById('reEditBtn');
+
+    // Add clearBtn to the elements section
+    const clearBtn = document.getElementById('clearBtn');
 
     function drawFrameOnly() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -222,6 +226,7 @@
           });
           cropBtn.disabled = false;
           reEditBtn.disabled = true;
+          clearBtn.disabled = false;  // Enable clear button when image is loaded
         };
         tempImg.src = evt.target.result;
       };
@@ -231,6 +236,7 @@
     testImgBtn.addEventListener('click', function() {
       showZoomSlider(true);
       cropperImg.src = 'assets/testimagealigns.jpg';
+      clearBtn.disabled = false;  // Enable clear button
       storeOriginalImage(); // Store the test image as original
       cropperImg.style.display = 'block';
       if (cropper) cropper.destroy();
@@ -291,6 +297,7 @@
       cropper = null;
       cropBtn.disabled = true;
       reEditBtn.disabled = false;
+      clearBtn.disabled = false;  // Enable clear button
       updateInfoSection(cropperImg);
 
       // Save the final canvas state
@@ -319,7 +326,6 @@
     function restoreCanvasState() {
       console.log('Attempting to restore canvas state...');
       const savedData = localStorage.getItem('savedCanvasState');
-      const originalImage = localStorage.getItem('originalImage');
       if (savedData) {
         console.log('Found saved canvas state');
         const img = new Image();
@@ -330,15 +336,18 @@
           ctx.drawImage(img, 0, 0);
           updateLiveThumb();
           console.log('Canvas state restored');
-          reEditBtn.disabled = false;  // Enable re-edit button if we have a saved state
+          reEditBtn.disabled = false;
+          clearBtn.disabled = false;  // Enable clear button if we have a saved state
         };
         img.onerror = function(e) {
           console.error('Error loading saved image:', e);
+          clearBtn.disabled = true;
         };
         img.src = savedData;
       } else {
         console.log('No saved canvas state found');
         reEditBtn.disabled = true;
+        clearBtn.disabled = true;
       }
     }
 
@@ -465,6 +474,36 @@
       reEditBtn.disabled = true;
       showZoomSlider(true);
     }
+
+    function clearImage() {
+      // Clear the canvas
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      drawFrameOnly();
+      
+      // Clear cropper if it exists
+      if (cropper) {
+        cropper.destroy();
+        cropper = null;
+      }
+      
+      // Reset UI elements
+      cropperImg.style.display = 'none';
+      cropBtn.disabled = true;
+      reEditBtn.disabled = true;
+      clearBtn.disabled = true;
+      showZoomSlider(false);
+      
+      // Clear stored data
+      localStorage.removeItem('savedCanvasState');
+      localStorage.removeItem('originalImage');
+      localStorage.removeItem('cropperState');
+      
+      // Update thumbnail
+      updateLiveThumb();
+    }
+
+    // Add clear button click handler
+    clearBtn.addEventListener('click', clearImage);
   </script>
 </body>
 </html>
