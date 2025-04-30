@@ -20,7 +20,7 @@
     <button id="testImgBtn" type="button">Test Image</button>
     <button id="cropBtn" disabled>Crop & Place in Frame</button>
     <br/>
-    <label for="zoomSlider">Zoom:</label>
+    <label for="zoomSlider" id="zoomSliderLabel">Zoom:</label>
     <input type="range" id="zoomSlider" min="1" max="3" step="0.01" value="1" style="width:200px;">
   </div>
   <div id="cropping-area">
@@ -58,6 +58,7 @@
 
     const testImgBtn = document.getElementById('testImgBtn');
     const zoomSlider = document.getElementById('zoomSlider');
+    const zoomSliderLabel = document.getElementById('zoomSliderLabel');
 
     function drawFrameOnly() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -107,11 +108,17 @@
       zoomSlider.value = zoom;
     }
 
+    function showZoomSlider(show) {
+      zoomSlider.style.display = show ? '' : 'none';
+      zoomSliderLabel.style.display = show ? '' : 'none';
+    }
+
     imgInput.addEventListener('change', function(e) {
       const file = e.target.files[0];
       const imgErrorMsg = document.getElementById('imgErrorMsg');
       imgErrorMsg.textContent = '';
       if (!file) return;
+      showZoomSlider(true);
       const reader = new FileReader();
       reader.onload = function(evt) {
         // Create a temp image to check size
@@ -167,6 +174,7 @@
     });
 
     testImgBtn.addEventListener('click', function() {
+      showZoomSlider(true);
       cropperImg.src = 'assets/testimagealigns.jpg';
       cropperImg.style.display = 'block';
       if (cropper) cropper.destroy();
@@ -203,6 +211,7 @@
     });
 
     cropBtn.addEventListener('click', function() {
+      showZoomSlider(false);
       if (!cropper) return;
       // Get cropped image as canvas
       const croppedCanvas = cropper.getCroppedCanvas({
