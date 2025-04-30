@@ -37,10 +37,10 @@
     const FRAME_SIZE = 1000; // original px
     const CANVAS_SIZE = 400; // display px
     const SCALE = CANVAS_SIZE / FRAME_SIZE;
-    const TRANSPARENT_X = 198.5;
-    const TRANSPARENT_Y = 198.5;
     const TRANSPARENT_W = 603;
     const TRANSPARENT_H = 603;
+    const TRANSPARENT_X = (FRAME_SIZE - TRANSPARENT_W) / 2;
+    const TRANSPARENT_Y = (FRAME_SIZE - TRANSPARENT_H) / 2;
 
     // Elements
     const imgInput = document.getElementById('imgInput');
