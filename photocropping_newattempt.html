@@ -65,6 +65,26 @@
           aspectRatio: 1,
           viewMode: 1,
           autoCropArea: 1,
+          dragMode: 'move',
+          cropBoxMovable: false,
+          cropBoxResizable: false,
+          movable: true,
+          zoomable: true,
+          scalable: false,
+          rotatable: false,
+          background: false,
+          guides: false,
+          highlight: false,
+          center: true,
+          ready() {
+            const cropBoxData = {
+              left: 0,
+              top: 0,
+              width: TRANSPARENT_W,
+              height: TRANSPARENT_H
+            };
+            this.cropper.setCropBoxData(cropBoxData);
+          }
         });
         cropBtn.disabled = false;
       };
