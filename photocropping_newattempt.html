@@ -19,6 +19,9 @@
     <input type="file" id="imgInput" accept="image/*">
     <button id="testImgBtn" type="button">Test Image</button>
     <button id="cropBtn" disabled>Crop & Place in Frame</button>
+    <br/>
+    <label for="zoomSlider">Zoom:</label>
+    <input type="range" id="zoomSlider" min="1" max="3" step="0.01" value="1" style="width:200px;">
   </div>
   <div id="cropping-area">
     <img id="cropperImg" style="max-width:400px; display:none;"/>
@@ -52,10 +55,22 @@
     };
 
     const testImgBtn = document.getElementById('testImgBtn');
+    const zoomSlider = document.getElementById('zoomSlider');
 
     function drawFrameOnly() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       ctx.drawImage(frameImg, 0, 0, FRAME_SIZE, FRAME_SIZE, 0, 0, CANVAS_SIZE, CANVAS_SIZE);
+    }
+
+    function resetZoomSlider() {
+      if (!cropper) return;
+      // Get the current fit zoom ratio
+      const imageData = cropper.getImageData();
+      const fitZoom = imageData.width / imageData.naturalWidth;
+      zoomSlider.min = fitZoom;
+      zoomSlider.max = fitZoom * 3;
+      zoomSlider.step = 0.01;
+      zoomSlider.value = fitZoom;
     }
 
     imgInput.addEventListener('change', function(e) {
@@ -89,6 +104,7 @@
               height: TRANSPARENT_H
             };
             this.cropper.setCropBoxData(cropBoxData);
+            resetZoomSlider();
           }
         });
         cropBtn.disabled = false;
@@ -123,6 +139,7 @@
             height: TRANSPARENT_H
           };
           this.cropper.setCropBoxData(cropBoxData);
+          resetZoomSlider();
         }
       });
       cropBtn.disabled = false;
@@ -149,6 +166,12 @@
       cropper.destroy();
       cropper = null;
       cropBtn.disabled = true;
+    });
+
+    zoomSlider.addEventListener('input', function() {
+      if (cropper) {
+        cropper.zoomTo(parseFloat(zoomSlider.value));
+      }
     });
   </script>
 </body>
