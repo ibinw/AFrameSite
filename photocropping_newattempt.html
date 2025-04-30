@@ -5,7 +5,7 @@
   <title>Frame Image Demo</title>
   <style>
     body { font-family: sans-serif; background: #222; color: #eee; text-align: center; }
-    #frame-preview { margin: 20px auto; display: block; background: #333; }
+    #frame-preview { margin: 0; display: block; background: #333; }
     #cropping-area { margin: 20px auto; }
     .placeholder { margin: 20px; color: #888; }
     .controls { margin: 20px; }
@@ -34,7 +34,7 @@
         <img id="cropperImg" style="max-width:400px; display:none;"/>
         <div id="imgErrorMsg" style="color:#ff6666; margin-top:10px;"></div>
       </div>
-      <div style="position:relative;">
+      <div style="position:relative; width:400px; margin:0 auto;">
         <canvas id="frame-preview" width="400" height="400"></canvas>
         <img id="frame-preview-static" src="" style="display:none; position:absolute; left:0; top:0; width:400px; height:400px; object-fit:contain; background:#333;"/>
       </div>
