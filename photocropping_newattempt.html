@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Frame Image Demo</title>
+  <style>
+    body { font-family: sans-serif; background: #222; color: #eee; text-align: center; }
+    #frame-preview { margin: 20px auto; display: block; background: #333; }
+    #cropping-area { margin: 20px auto; }
+    .placeholder { margin: 20px; color: #888; }
+    .controls { margin: 20px; }
+  </style>
+  <!-- Cropper.js CDN -->
+  <link  href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" rel="stylesheet"/>
+</head>
+<body>
+  <h2>Frame Demo (Core Functions Only)</h2>
+  <div class="controls">
+    <input type="file" id="imgInput" accept="image/*">
+    <button id="cropBtn" disabled>Crop & Place in Frame</button>
+  </div>
+  <div id="cropping-area">
+    <img id="cropperImg" style="max-width:400px; display:none;"/>
+  </div>
+  <canvas id="frame-preview" width="1000" height="1000"></canvas>
+  <div class="placeholder">[Add to Cart, Region Selector, etc. Placeholder]</div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+  <script>
+    // Frame and transparent area config
+    const FRAME_PATH = 'assets/frames/frame_test_2.png';
+    const FRAME_SIZE = 1000; // px (will auto-detect if needed)
+    const TRANSPARENT_X = 198.5;
+    const TRANSPARENT_Y = 198.5;
+    const TRANSPARENT_W = 603;
+    const TRANSPARENT_H = 603;
+
+    // Elements
+    const imgInput = document.getElementById('imgInput');
+    const cropperImg = document.getElementById('cropperImg');
+    const cropBtn = document.getElementById('cropBtn');
+    const canvas = document.getElementById('frame-preview');
+    const ctx = canvas.getContext('2d');
+    let cropper = null;
+    let frameImg = new window.Image();
+    frameImg.src = FRAME_PATH;
+    frameImg.onload = () => {
+      drawFrameOnly();
+    };
+
+    function drawFrameOnly() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.drawImage(frameImg, 0, 0, FRAME_SIZE, FRAME_SIZE);
+    }
+
+    imgInput.addEventListener('change', function(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function(evt) {
+        cropperImg.src = evt.target.result;
+        cropperImg.style.display = 'block';
+        if (cropper) cropper.destroy();
+        cropper = new Cropper(cropperImg, {
+          aspectRatio: 1,
+          viewMode: 1,
+          autoCropArea: 1,
+        });
+        cropBtn.disabled = false;
+      };
+      reader.readAsDataURL(file);
+    });
+
+    cropBtn.addEventListener('click', function() {
+      if (!cropper) return;
+      // Get cropped image as canvas
+      const croppedCanvas = cropper.getCroppedCanvas({
+        width: TRANSPARENT_W,
+        height: TRANSPARENT_H,
+        imageSmoothingQuality: 'high',
+      });
+      // Draw the cropped image into the transparent area
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.drawImage(
+        croppedCanvas,
+        0, 0, TRANSPARENT_W, TRANSPARENT_H,
+        TRANSPARENT_X, TRANSPARENT_Y, TRANSPARENT_W, TRANSPARENT_H
+      );
+      // Draw the frame on top
+      ctx.drawImage(frameImg, 0, 0, FRAME_SIZE, FRAME_SIZE);
+      cropperImg.style.display = 'none';
+      cropper.destroy();
+      cropper = null;
+      cropBtn.disabled = true;
+    });
+  </script>
+</body>
+</html>
