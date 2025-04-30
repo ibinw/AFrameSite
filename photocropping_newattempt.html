@@ -76,6 +76,7 @@
     const ctx = canvas.getContext('2d');
     let cropper = null;
     let frameImg = new window.Image();
+    frameImg.crossOrigin = "anonymous";
     frameImg.src = FRAME_PATH;
     frameImg.onload = () => {
       drawFrameOnly();
@@ -148,6 +149,7 @@
       reader.onload = function(evt) {
         // Create a temp image to check size
         const tempImg = new window.Image();
+        tempImg.crossOrigin = "anonymous";
         tempImg.onload = function() {
           if (tempImg.naturalWidth < 500 || tempImg.naturalHeight < 500) {
             updateInfoSection(tempImg);
@@ -159,6 +161,7 @@
           }
           updateInfoSection(tempImg);
           cropperImg.src = evt.target.result;
+          cropperImg.crossOrigin = "anonymous";
           cropperImg.style.display = 'block';
           if (cropper) cropper.destroy();
           cropper = new Cropper(cropperImg, {
@@ -244,6 +247,7 @@
         height: TRANSPARENT_H,
         imageSmoothingQuality: 'high',
       });
+      
       // Draw the cropped image into the transparent area
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       ctx.drawImage(
@@ -258,6 +262,57 @@
       cropper = null;
       cropBtn.disabled = true;
       updateInfoSection(cropperImg);
+
+      // Save the final canvas state as Base64
+      try {
+        const finalCanvas = document.createElement('canvas');
+        finalCanvas.width = canvas.width;
+        finalCanvas.height = canvas.height;
+        const finalCtx = finalCanvas.getContext('2d');
+        finalCtx.drawImage(canvas, 0, 0);
+        const imageData = finalCanvas.toDataURL('image/png');
+        localStorage.setItem('savedCanvasState', imageData);
+        console.log('Canvas state saved successfully');
+      } catch (e) {
+        console.error('Error saving canvas state:', e);
+      }
+    });
+
+    // Modify restore function to use Base64 data and add frame
+    function restoreCanvasState() {
+      console.log('Attempting to restore canvas state...');
+      const savedData = localStorage.getItem('savedCanvasState');
+      if (savedData) {
+        console.log('Found saved canvas state');
+        const img = new Image();
+        img.crossOrigin = "anonymous";
+        img.onload = function() {
+          console.log('Saved image loaded successfully');
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+          ctx.drawImage(img, 0, 0);
+          updateLiveThumb();
+          console.log('Canvas state restored');
+        };
+        img.onerror = function(e) {
+          console.error('Error loading saved image:', e);
+        };
+        img.src = savedData;
+      } else {
+        console.log('No saved canvas state found');
+      }
+    }
+
+    // Make sure frame is loaded before attempting to restore
+    frameImg.onload = () => {
+      drawFrameOnly();
+      // Wait a short moment to ensure everything is initialized
+      setTimeout(restoreCanvasState, 100);
+    };
+
+    // Call restoreCanvasState when the page loads
+    window.addEventListener('DOMContentLoaded', function() {
+      console.log('Page loaded, waiting for frame image...');
+      updateLiveThumb();
     });
 
     zoomSlider.addEventListener('input', function() {
@@ -297,6 +352,7 @@
     function showStaticPreview(src) {
       framePreview.style.visibility = 'hidden';
       framePreviewStatic.src = src;
+      framePreviewStatic.crossOrigin = "anonymous";
       framePreviewStatic.style.display = 'block';
       // Hide cropping controls
       document.querySelector('.controls').style.visibility = 'hidden';
