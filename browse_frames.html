@@ -47,6 +47,15 @@
             margin: 5px 0;
         }
     </style>
+    <script>
+        window.onload = function() {
+            const savedPreview = localStorage.getItem('framePreviewData');
+            if (savedPreview) {
+                const firstFrameImg = document.querySelector('.frame-item:first-child .frame-image img');
+                firstFrameImg.src = savedPreview;
+            }
+        };
+    </script>
 </head>
 <body>
     <div class="frames-grid">

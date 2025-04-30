@@ -23,6 +23,7 @@
     </div>
     <div style="flex:1; min-width:420px;">
       <div class="controls">
+        <a href="browse_frames.html" style="text-decoration: none;"><button type="button">Browse Frames</button></a>
         <input type="file" id="imgInput" accept="image/*">
         <button id="testImgBtn" type="button">Test Image</button>
         <button id="cropBtn" disabled>Crop & Place in Frame</button>
@@ -75,6 +76,21 @@
     function drawFrameOnly() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       ctx.drawImage(frameImg, 0, 0, FRAME_SIZE, FRAME_SIZE, 0, 0, CANVAS_SIZE, CANVAS_SIZE);
+      // If there's saved canvas data, restore it
+      const savedCanvasData = localStorage.getItem('framePreviewData');
+      if (savedCanvasData) {
+        const savedImage = new Image();
+        savedImage.onload = function() {
+          ctx.drawImage(
+            savedImage,
+            TRANSPARENT_X * SCALE, TRANSPARENT_Y * SCALE, 
+            TRANSPARENT_W * SCALE, TRANSPARENT_H * SCALE
+          );
+          ctx.drawImage(frameImg, 0, 0, FRAME_SIZE, FRAME_SIZE, 0, 0, CANVAS_SIZE, CANVAS_SIZE);
+          updateLiveThumb();
+        };
+        savedImage.src = savedCanvasData;
+      }
     }
 
     function resetZoomSlider() {
@@ -130,6 +146,8 @@
       const imgErrorMsg = document.getElementById('imgErrorMsg');
       imgErrorMsg.textContent = '';
       if (!file) return;
+      // Clear previous saved canvas data when new image is uploaded
+      localStorage.removeItem('framePreviewData');
       showZoomSlider(true);
       const reader = new FileReader();
       reader.onload = function(evt) {
@@ -240,6 +258,8 @@
       );
       // Draw the frame on top
       ctx.drawImage(frameImg, 0, 0, FRAME_SIZE, FRAME_SIZE, 0, 0, CANVAS_SIZE, CANVAS_SIZE);
+      // Save the canvas state to localStorage
+      localStorage.setItem('framePreviewData', canvas.toDataURL());
       cropperImg.style.display = 'none';
       cropper.destroy();
       cropper = null;
