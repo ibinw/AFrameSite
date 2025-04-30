@@ -9,7 +9,7 @@
     #cropping-area { margin: 20px auto; }
     .placeholder { margin: 20px; color: #888; }
     .controls { margin: 20px; }
-    .back-button {
+    .back-button, #reEditBtn {
       background: #444;
       color: #eee;
       border: none;
@@ -18,8 +18,12 @@
       cursor: pointer;
       margin-right: 10px;
     }
-    .back-button:hover {
+    .back-button:hover, #reEditBtn:hover {
       background: #555;
+    }
+    #reEditBtn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
     }
   </style>
   <!-- Cropper.js CDN -->
@@ -39,6 +43,7 @@
         <input type="file" id="imgInput" accept="image/*">
         <button id="testImgBtn" type="button">Test Image</button>
         <button id="cropBtn" disabled>Crop & Place in Frame</button>
+        <button id="reEditBtn" disabled>Re-edit Image</button>
         <br/>
         <label for="zoomSlider" id="zoomSliderLabel">Zoom:</label>
         <input type="range" id="zoomSlider" min="1" max="3" step="0.01" value="1" style="width:200px;">
@@ -85,6 +90,9 @@
     const testImgBtn = document.getElementById('testImgBtn');
     const zoomSlider = document.getElementById('zoomSlider');
     const zoomSliderLabel = document.getElementById('zoomSliderLabel');
+
+    // Add reEditBtn to the elements section
+    const reEditBtn = document.getElementById('reEditBtn');
 
     function drawFrameOnly() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -139,6 +147,14 @@
       zoomSliderLabel.style.display = show ? '' : 'none';
     }
 
+    // Add this function to store the original image when it's first loaded
+    function storeOriginalImage() {
+      if (cropperImg.src) {
+        localStorage.setItem('originalImage', cropperImg.src);
+      }
+    }
+
+    // Modify the file input handler
     imgInput.addEventListener('change', function(e) {
       const file = e.target.files[0];
       const imgErrorMsg = document.getElementById('imgErrorMsg');
@@ -161,7 +177,7 @@
           }
           updateInfoSection(tempImg);
           cropperImg.src = evt.target.result;
-          cropperImg.crossOrigin = "anonymous";
+          storeOriginalImage(); // Store the original image
           cropperImg.style.display = 'block';
           if (cropper) cropper.destroy();
           cropper = new Cropper(cropperImg, {
@@ -194,7 +210,7 @@
             }
           });
           cropBtn.disabled = false;
-          cropperImg.onload = function() { updateInfoSection(cropperImg); };
+          reEditBtn.disabled = true;
         };
         tempImg.src = evt.target.result;
       };
@@ -204,6 +220,7 @@
     testImgBtn.addEventListener('click', function() {
       showZoomSlider(true);
       cropperImg.src = 'assets/testimagealigns.jpg';
+      storeOriginalImage(); // Store the test image as original
       cropperImg.style.display = 'block';
       if (cropper) cropper.destroy();
       cropper = new Cropper(cropperImg, {
@@ -241,47 +258,53 @@
     cropBtn.addEventListener('click', function() {
       showZoomSlider(false);
       if (!cropper) return;
-      // Get cropped image as canvas
       const croppedCanvas = cropper.getCroppedCanvas({
         width: TRANSPARENT_W,
         height: TRANSPARENT_H,
         imageSmoothingQuality: 'high',
       });
       
-      // Draw the cropped image into the transparent area
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       ctx.drawImage(
         croppedCanvas,
         0, 0, TRANSPARENT_W, TRANSPARENT_H,
         TRANSPARENT_X * SCALE, TRANSPARENT_Y * SCALE, TRANSPARENT_W * SCALE, TRANSPARENT_H * SCALE
       );
-      // Draw the frame on top
       ctx.drawImage(frameImg, 0, 0, FRAME_SIZE, FRAME_SIZE, 0, 0, CANVAS_SIZE, CANVAS_SIZE);
       cropperImg.style.display = 'none';
       cropper.destroy();
       cropper = null;
       cropBtn.disabled = true;
+      reEditBtn.disabled = false;
       updateInfoSection(cropperImg);
 
-      // Save the final canvas state as Base64
+      // Save the final canvas state
       try {
         const finalCanvas = document.createElement('canvas');
         finalCanvas.width = canvas.width;
         finalCanvas.height = canvas.height;
         const finalCtx = finalCanvas.getContext('2d');
         finalCtx.drawImage(canvas, 0, 0);
-        const imageData = finalCanvas.toDataURL('image/png');
-        localStorage.setItem('savedCanvasState', imageData);
+        localStorage.setItem('savedCanvasState', finalCanvas.toDataURL('image/png'));
         console.log('Canvas state saved successfully');
       } catch (e) {
         console.error('Error saving canvas state:', e);
       }
     });
 
-    // Modify restore function to use Base64 data and add frame
+    // Modify the re-edit button click handler
+    reEditBtn.addEventListener('click', function() {
+      const originalImage = localStorage.getItem('originalImage');
+      if (originalImage) {
+        startEditing(originalImage);
+      }
+    });
+
+    // Modify restore function
     function restoreCanvasState() {
       console.log('Attempting to restore canvas state...');
       const savedData = localStorage.getItem('savedCanvasState');
+      const originalImage = localStorage.getItem('originalImage');
       if (savedData) {
         console.log('Found saved canvas state');
         const img = new Image();
@@ -292,6 +315,7 @@
           ctx.drawImage(img, 0, 0);
           updateLiveThumb();
           console.log('Canvas state restored');
+          reEditBtn.disabled = false;  // Enable re-edit button if we have a saved state
         };
         img.onerror = function(e) {
           console.error('Error loading saved image:', e);
@@ -299,6 +323,7 @@
         img.src = savedData;
       } else {
         console.log('No saved canvas state found');
+        reEditBtn.disabled = true;
       }
     }
 
@@ -376,6 +401,44 @@
 
     // Initialize live thumb on load
     window.addEventListener('DOMContentLoaded', updateLiveThumb);
+
+    function startEditing(imageData) {
+      cropperImg.src = imageData;
+      cropperImg.style.display = 'block';
+      if (cropper) cropper.destroy();
+      cropper = new Cropper(cropperImg, {
+        aspectRatio: 1,
+        viewMode: 1,
+        autoCropArea: 1,
+        dragMode: 'move',
+        cropBoxMovable: false,
+        cropBoxResizable: false,
+        movable: true,
+        zoomable: true,
+        scalable: false,
+        rotatable: false,
+        background: false,
+        guides: false,
+        highlight: false,
+        center: true,
+        ready() {
+          const cropBoxData = {
+            left: 0,
+            top: 0,
+            width: TRANSPARENT_W,
+            height: TRANSPARENT_H
+          };
+          this.cropper.setCropBoxData(cropBoxData);
+          resetZoomSlider();
+        },
+        zoom(event) {
+          syncZoomSliderWithCropper();
+        }
+      });
+      cropBtn.disabled = false;
+      reEditBtn.disabled = true;
+      showZoomSlider(true);
+    }
   </script>
 </body>
 </html>
