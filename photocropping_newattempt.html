@@ -25,6 +25,7 @@
   </div>
   <div id="cropping-area">
     <img id="cropperImg" style="max-width:400px; display:none;"/>
+    <div id="imgErrorMsg" style="color:#ff6666; margin-top:10px;"></div>
   </div>
   <canvas id="frame-preview" width="400" height="400"></canvas>
   <div class="placeholder">[Add to Cart, Region Selector, etc. Placeholder]</div>
@@ -75,39 +76,53 @@
 
     imgInput.addEventListener('change', function(e) {
       const file = e.target.files[0];
+      const imgErrorMsg = document.getElementById('imgErrorMsg');
+      imgErrorMsg.textContent = '';
       if (!file) return;
       const reader = new FileReader();
       reader.onload = function(evt) {
-        cropperImg.src = evt.target.result;
-        cropperImg.style.display = 'block';
-        if (cropper) cropper.destroy();
-        cropper = new Cropper(cropperImg, {
-          aspectRatio: 1,
-          viewMode: 1,
-          autoCropArea: 1,
-          dragMode: 'move',
-          cropBoxMovable: false,
-          cropBoxResizable: false,
-          movable: true,
-          zoomable: true,
-          scalable: false,
-          rotatable: false,
-          background: false,
-          guides: false,
-          highlight: false,
-          center: true,
-          ready() {
-            const cropBoxData = {
-              left: 0,
-              top: 0,
-              width: TRANSPARENT_W,
-              height: TRANSPARENT_H
-            };
-            this.cropper.setCropBoxData(cropBoxData);
-            resetZoomSlider();
+        // Create a temp image to check size
+        const tempImg = new window.Image();
+        tempImg.onload = function() {
+          if (tempImg.naturalWidth < 500 || tempImg.naturalHeight < 500) {
+            imgErrorMsg.textContent = 'Image too small. Please upload an image larger than 500x500.';
+            cropperImg.style.display = 'none';
+            cropBtn.disabled = true;
+            if (cropper) { cropper.destroy(); cropper = null; }
+            return;
           }
-        });
-        cropBtn.disabled = false;
+          cropperImg.src = evt.target.result;
+          cropperImg.style.display = 'block';
+          if (cropper) cropper.destroy();
+          cropper = new Cropper(cropperImg, {
+            aspectRatio: 1,
+            viewMode: 1,
+            autoCropArea: 1,
+            dragMode: 'move',
+            cropBoxMovable: false,
+            cropBoxResizable: false,
+            movable: true,
+            zoomable: true,
+            scalable: false,
+            rotatable: false,
+            background: false,
+            guides: false,
+            highlight: false,
+            center: true,
+            ready() {
+              const cropBoxData = {
+                left: 0,
+                top: 0,
+                width: TRANSPARENT_W,
+                height: TRANSPARENT_H
+              };
+              this.cropper.setCropBoxData(cropBoxData);
+              resetZoomSlider();
+            }
+          });
+          cropBtn.disabled = false;
+        };
+        tempImg.src = evt.target.result;
       };
       reader.readAsDataURL(file);
     });
