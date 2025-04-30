@@ -28,6 +28,7 @@
     <div id="imgErrorMsg" style="color:#ff6666; margin-top:10px;"></div>
   </div>
   <canvas id="frame-preview" width="400" height="400"></canvas>
+  <div id="infoSection" style="margin: 20px auto; color: #eee; background: #333; max-width: 420px; padding: 10px; border-radius: 8px; font-size: 15px; text-align: left;"></div>
   <div class="placeholder">[Add to Cart, Region Selector, etc. Placeholder]</div>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
@@ -74,6 +75,31 @@
       zoomSlider.value = fitZoom;
     }
 
+    function gcd(a, b) {
+      return b === 0 ? a : gcd(b, a % b);
+    }
+
+    function updateInfoSection(imgData) {
+      const infoSection = document.getElementById('infoSection');
+      // Frame and transparent area info
+      let frameInfo = `Frame size: <b>${FRAME_SIZE} x ${FRAME_SIZE}</b> px`;
+      let transparentInfo = `Transparent area: <b>${TRANSPARENT_W} x ${TRANSPARENT_H}</b> px`;
+      // Aspect ratio
+      let w = TRANSPARENT_W, h = TRANSPARENT_H;
+      let d = gcd(w, h);
+      let aspect = `${w/d} : ${h/d}`;
+      let aspectInfo = `Aspect ratio: <b>${aspect}</b>`;
+      // Image info
+      let imgInfo = imgData ? `Image resolution: <b>${imgData.naturalWidth} x ${imgData.naturalHeight}</b> px` : 'Image resolution: <b>-</b>';
+      // Zoom info
+      let zoom = cropper ? cropper.getImageData().width / cropper.getImageData().naturalWidth : 1;
+      // Cropped area info (after zoom)
+      let cropW = Math.round(TRANSPARENT_W / zoom);
+      let cropH = Math.round(TRANSPARENT_H / zoom);
+      let cropInfo = `Cropped area (from image): <b>${cropW} x ${cropH}</b> px`;
+      infoSection.innerHTML = [imgInfo, frameInfo, transparentInfo, aspectInfo, cropInfo].join('<br>');
+    }
+
     imgInput.addEventListener('change', function(e) {
       const file = e.target.files[0];
       const imgErrorMsg = document.getElementById('imgErrorMsg');
@@ -85,12 +111,14 @@
         const tempImg = new window.Image();
         tempImg.onload = function() {
           if (tempImg.naturalWidth < 500 || tempImg.naturalHeight < 500) {
+            updateInfoSection(tempImg);
             imgErrorMsg.textContent = 'Image too small. Please upload an image larger than 500x500.';
             cropperImg.style.display = 'none';
             cropBtn.disabled = true;
             if (cropper) { cropper.destroy(); cropper = null; }
             return;
           }
+          updateInfoSection(tempImg);
           cropperImg.src = evt.target.result;
           cropperImg.style.display = 'block';
           if (cropper) cropper.destroy();
@@ -121,6 +149,7 @@
             }
           });
           cropBtn.disabled = false;
+          cropperImg.onload = function() { updateInfoSection(cropperImg); };
         };
         tempImg.src = evt.target.result;
       };
@@ -181,11 +210,13 @@
       cropper.destroy();
       cropper = null;
       cropBtn.disabled = true;
+      updateInfoSection(cropperImg);
     });
 
     zoomSlider.addEventListener('input', function() {
       if (cropper) {
         cropper.zoomTo(parseFloat(zoomSlider.value));
+        updateInfoSection(cropperImg);
       }
     });
   </script>
