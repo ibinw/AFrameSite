@@ -15,21 +15,33 @@
 </head>
 <body>
   <h2>Frame Demo (Core Functions Only)</h2>
-  <div class="controls">
-    <input type="file" id="imgInput" accept="image/*">
-    <button id="testImgBtn" type="button">Test Image</button>
-    <button id="cropBtn" disabled>Crop & Place in Frame</button>
-    <br/>
-    <label for="zoomSlider" id="zoomSliderLabel">Zoom:</label>
-    <input type="range" id="zoomSlider" min="1" max="3" step="0.01" value="1" style="width:200px;">
+  <div style="display: flex; justify-content: center; align-items: flex-start; gap: 30px;">
+    <div id="preview-thumbs" style="display: flex; flex-direction: column; gap: 15px; align-items: center;">
+      <canvas id="thumb-live" width="60" height="60" style="border:2px solid #fff; background:#222; cursor:pointer;"></canvas>
+      <img src="assets/frames/example_frame_1/secondimage.webp" id="thumb-second" width="60" height="60" style="object-fit:cover; border:2px solid #fff; background:#222; cursor:pointer;"/>
+      <img src="assets/frames/example_frame_1/thirdimage.webp" id="thumb-third" width="60" height="60" style="object-fit:cover; border:2px solid #fff; background:#222; cursor:pointer;"/>
+    </div>
+    <div style="flex:1; min-width:420px;">
+      <div class="controls">
+        <input type="file" id="imgInput" accept="image/*">
+        <button id="testImgBtn" type="button">Test Image</button>
+        <button id="cropBtn" disabled>Crop & Place in Frame</button>
+        <br/>
+        <label for="zoomSlider" id="zoomSliderLabel">Zoom:</label>
+        <input type="range" id="zoomSlider" min="1" max="3" step="0.01" value="1" style="width:200px;">
+      </div>
+      <div id="cropping-area">
+        <img id="cropperImg" style="max-width:400px; display:none;"/>
+        <div id="imgErrorMsg" style="color:#ff6666; margin-top:10px;"></div>
+      </div>
+      <div style="position:relative;">
+        <canvas id="frame-preview" width="400" height="400"></canvas>
+        <img id="frame-preview-static" src="" style="display:none; position:absolute; left:0; top:0; width:400px; height:400px; object-fit:contain; background:#333;"/>
+      </div>
+      <div id="infoSection" style="margin: 20px auto; color: #eee; background: #333; max-width: 420px; padding: 10px; border-radius: 8px; font-size: 15px; text-align: left;"></div>
+      <div class="placeholder">[Add to Cart, Region Selector, etc. Placeholder]</div>
+    </div>
   </div>
-  <div id="cropping-area">
-    <img id="cropperImg" style="max-width:400px; display:none;"/>
-    <div id="imgErrorMsg" style="color:#ff6666; margin-top:10px;"></div>
-  </div>
-  <canvas id="frame-preview" width="400" height="400"></canvas>
-  <div id="infoSection" style="margin: 20px auto; color: #eee; background: #333; max-width: 420px; padding: 10px; border-radius: 8px; font-size: 15px; text-align: left;"></div>
-  <div class="placeholder">[Add to Cart, Region Selector, etc. Placeholder]</div>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
   <script>
@@ -241,6 +253,60 @@
         updateInfoSection(cropperImg);
       }
     });
+
+    // --- Preview Thumbnails Logic ---
+    const thumbLive = document.getElementById('thumb-live');
+    const thumbSecond = document.getElementById('thumb-second');
+    const thumbThird = document.getElementById('thumb-third');
+    const framePreviewStatic = document.getElementById('frame-preview-static');
+    const framePreview = document.getElementById('frame-preview');
+
+    // Helper to update the live thumbnail from the main canvas
+    function updateLiveThumb() {
+      const ctxThumb = thumbLive.getContext('2d');
+      ctxThumb.clearRect(0, 0, thumbLive.width, thumbLive.height);
+      ctxThumb.drawImage(framePreview, 0, 0, framePreview.width, framePreview.height, 0, 0, thumbLive.width, thumbLive.height);
+    }
+
+    // Always update the live thumb after drawing to main preview
+    const origDrawFrameOnly = drawFrameOnly;
+    drawFrameOnly = function() {
+      origDrawFrameOnly();
+      updateLiveThumb();
+    };
+    // Also update after cropping
+    const origCropBtnClick = cropBtn.onclick;
+    cropBtn.addEventListener('click', function() {
+      setTimeout(updateLiveThumb, 10);
+    });
+
+    // Show/hide static preview image overlay
+    function showStaticPreview(src) {
+      framePreview.style.visibility = 'hidden';
+      framePreviewStatic.src = src;
+      framePreviewStatic.style.display = 'block';
+      // Hide cropping controls
+      document.querySelector('.controls').style.visibility = 'hidden';
+      document.getElementById('cropping-area').style.visibility = 'hidden';
+    }
+    function showLivePreview() {
+      framePreview.style.visibility = 'visible';
+      framePreviewStatic.style.display = 'none';
+      document.querySelector('.controls').style.visibility = 'visible';
+      document.getElementById('cropping-area').style.visibility = 'visible';
+    }
+
+    // Click handlers for previews
+    thumbLive.addEventListener('click', showLivePreview);
+    thumbSecond.addEventListener('click', function() {
+      showStaticPreview('assets/frames/example_frame_1/secondimage.webp');
+    });
+    thumbThird.addEventListener('click', function() {
+      showStaticPreview('assets/frames/example_frame_1/thirdimage.webp');
+    });
+
+    // Initialize live thumb on load
+    window.addEventListener('DOMContentLoaded', updateLiveThumb);
   </script>
 </body>
 </html>
