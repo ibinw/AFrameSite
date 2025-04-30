@@ -17,19 +17,22 @@
   <h2>Frame Demo (Core Functions Only)</h2>
   <div class="controls">
     <input type="file" id="imgInput" accept="image/*">
+    <button id="testImgBtn" type="button">Test Image</button>
     <button id="cropBtn" disabled>Crop & Place in Frame</button>
   </div>
   <div id="cropping-area">
     <img id="cropperImg" style="max-width:400px; display:none;"/>
   </div>
-  <canvas id="frame-preview" width="1000" height="1000"></canvas>
+  <canvas id="frame-preview" width="400" height="400"></canvas>
   <div class="placeholder">[Add to Cart, Region Selector, etc. Placeholder]</div>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
   <script>
     // Frame and transparent area config
     const FRAME_PATH = 'assets/frames/frame_test_2.png';
-    const FRAME_SIZE = 1000; // px (will auto-detect if needed)
+    const FRAME_SIZE = 1000; // original px
+    const CANVAS_SIZE = 400; // display px
+    const SCALE = CANVAS_SIZE / FRAME_SIZE;
     const TRANSPARENT_X = 198.5;
     const TRANSPARENT_Y = 198.5;
     const TRANSPARENT_W = 603;
@@ -48,9 +51,11 @@
       drawFrameOnly();
     };
 
+    const testImgBtn = document.getElementById('testImgBtn');
+
     function drawFrameOnly() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-      ctx.drawImage(frameImg, 0, 0, FRAME_SIZE, FRAME_SIZE);
+      ctx.drawImage(frameImg, 0, 0, FRAME_SIZE, FRAME_SIZE, 0, 0, CANVAS_SIZE, CANVAS_SIZE);
     }
 
     imgInput.addEventListener('change', function(e) {
@@ -91,6 +96,38 @@
       reader.readAsDataURL(file);
     });
 
+    testImgBtn.addEventListener('click', function() {
+      cropperImg.src = 'assets/testimagealigns.jpg';
+      cropperImg.style.display = 'block';
+      if (cropper) cropper.destroy();
+      cropper = new Cropper(cropperImg, {
+        aspectRatio: 1,
+        viewMode: 1,
+        autoCropArea: 1,
+        dragMode: 'move',
+        cropBoxMovable: false,
+        cropBoxResizable: false,
+        movable: true,
+        zoomable: true,
+        scalable: false,
+        rotatable: false,
+        background: false,
+        guides: false,
+        highlight: false,
+        center: true,
+        ready() {
+          const cropBoxData = {
+            left: 0,
+            top: 0,
+            width: TRANSPARENT_W,
+            height: TRANSPARENT_H
+          };
+          this.cropper.setCropBoxData(cropBoxData);
+        }
+      });
+      cropBtn.disabled = false;
+    });
+
     cropBtn.addEventListener('click', function() {
       if (!cropper) return;
       // Get cropped image as canvas
@@ -104,10 +141,10 @@
       ctx.drawImage(
         croppedCanvas,
         0, 0, TRANSPARENT_W, TRANSPARENT_H,
-        TRANSPARENT_X, TRANSPARENT_Y, TRANSPARENT_W, TRANSPARENT_H
+        TRANSPARENT_X * SCALE, TRANSPARENT_Y * SCALE, TRANSPARENT_W * SCALE, TRANSPARENT_H * SCALE
       );
       // Draw the frame on top
-      ctx.drawImage(frameImg, 0, 0, FRAME_SIZE, FRAME_SIZE);
+      ctx.drawImage(frameImg, 0, 0, FRAME_SIZE, FRAME_SIZE, 0, 0, CANVAS_SIZE, CANVAS_SIZE);
       cropperImg.style.display = 'none';
       cropper.destroy();
       cropper = null;
