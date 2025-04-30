@@ -147,10 +147,21 @@
       zoomSliderLabel.style.display = show ? '' : 'none';
     }
 
-    // Add this function to store the original image when it's first loaded
+    // Add this function to store both original image and cropping state
     function storeOriginalImage() {
       if (cropperImg.src) {
         localStorage.setItem('originalImage', cropperImg.src);
+      }
+    }
+
+    function storeCropperState() {
+      if (cropper) {
+        const cropperData = {
+          canvasData: cropper.getCanvasData(),
+          cropBoxData: cropper.getCropBoxData(),
+          zoomRatio: cropper.getImageData().width / cropper.getImageData().naturalWidth
+        };
+        localStorage.setItem('cropperState', JSON.stringify(cropperData));
       }
     }
 
@@ -258,6 +269,10 @@
     cropBtn.addEventListener('click', function() {
       showZoomSlider(false);
       if (!cropper) return;
+      
+      // Store cropper state before destroying it
+      storeCropperState();
+
       const croppedCanvas = cropper.getCroppedCanvas({
         width: TRANSPARENT_W,
         height: TRANSPARENT_H,
@@ -429,7 +444,18 @@
             height: TRANSPARENT_H
           };
           this.cropper.setCropBoxData(cropBoxData);
-          resetZoomSlider();
+
+          // Restore previous cropper state if available
+          const savedState = localStorage.getItem('cropperState');
+          if (savedState) {
+            const state = JSON.parse(savedState);
+            this.cropper.setCanvasData(state.canvasData);
+            this.cropper.setCropBoxData(state.cropBoxData);
+            // Set zoom level
+            this.cropper.zoomTo(state.zoomRatio);
+          } else {
+            resetZoomSlider();
+          }
         },
         zoom(event) {
           syncZoomSliderWithCropper();
