@@ -381,8 +381,7 @@
 
     zoomSlider.addEventListener('input', function() {
       if (cropper) {
-        cropper.zoomTo(parseFloat(zoomSlider.value));
-        updateInfoSection(cropperImg);
+        cropper.zoomTo(parseFloat(this.value));
       }
     });
 
@@ -472,7 +471,15 @@
           const imageData = this.cropper.getImageData();
           const fitZoom = imageData.width / imageData.naturalWidth;
           this.cropper.zoomTo(fitZoom);
+          zoomSlider.min = fitZoom;
+          zoomSlider.max = fitZoom * 3;
+          zoomSlider.step = 0.01;
           zoomSlider.value = fitZoom;
+        },
+        zoom(event) {
+          // Update slider value when zooming with mouse wheel
+          const currentZoom = event.detail.ratio;
+          zoomSlider.value = currentZoom;
         }
       });
       cropBtn.disabled = false;
