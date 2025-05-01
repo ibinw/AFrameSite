@@ -182,6 +182,7 @@
       imgErrorMsg.textContent = '';
       if (!file) return;
       showZoomSlider(true);
+      testImgBtn.disabled = true; // Disable test image button when file is loaded
       const reader = new FileReader();
       reader.onload = function(evt) {
         // Create a temp image to check size
@@ -242,9 +243,9 @@
     testImgBtn.addEventListener('click', function() {
       showZoomSlider(true);
       cropperImg.src = 'assets/testimagealigns.jpg';
-      clearBtn.disabled = false;  // Enable clear button
-      storeOriginalImage(); // Store the test image as original
+      storeOriginalImage();
       cropperImg.style.display = 'block';
+      testImgBtn.disabled = true; // Disable test image button after using it
       if (cropper) cropper.destroy();
       cropper = new Cropper(cropperImg, {
         aspectRatio: 1,
@@ -343,17 +344,20 @@
           updateLiveThumb();
           console.log('Canvas state restored');
           reEditBtn.disabled = false;
-          clearBtn.disabled = false;  // Enable clear button if we have a saved state
+          clearBtn.disabled = false;
+          testImgBtn.disabled = true; // Disable test image button when state is restored
         };
         img.onerror = function(e) {
           console.error('Error loading saved image:', e);
           clearBtn.disabled = true;
+          testImgBtn.disabled = false; // Enable test image button if restore fails
         };
         img.src = savedData;
       } else {
         console.log('No saved canvas state found');
         reEditBtn.disabled = true;
         clearBtn.disabled = true;
+        testImgBtn.disabled = false; // Enable test image button if no state found
       }
     }
 
@@ -497,6 +501,7 @@
       cropBtn.disabled = true;
       reEditBtn.disabled = true;
       clearBtn.disabled = true;
+      testImgBtn.disabled = false; // Re-enable test image button when cleared
       showZoomSlider(false);
       
       // Clear stored data
