@@ -378,6 +378,12 @@
     window.addEventListener('DOMContentLoaded', function() {
       console.log('Page loaded, waiting for frame image...');
       updateLiveThumb();
+      initializeZoomSlider();
+      // If originalImage exists, start editing it
+      const originalImage = localStorage.getItem('originalImage');
+      if (originalImage) {
+        startEditing(originalImage);
+      }
     });
 
     zoomSlider.addEventListener('input', function() {

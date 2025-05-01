@@ -61,6 +61,7 @@
             frameItems.forEach((item, index) => {
                 const img = item.querySelector('img');
                 const frameName = item.getAttribute('data-frame');
+                if (!img) return; // Skip if no <img> in this frame-item
                 
                 if (index === 0) {
                     // First frame - check for preview
