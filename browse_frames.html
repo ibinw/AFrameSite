@@ -64,12 +64,17 @@
                 if (!img) return; // Skip if no <img> in this frame-item
                 
                 if (index === 0) {
-                    // First frame - check for preview
-                    const savedPreview = localStorage.getItem('framePreviewData');
-                    if (savedPreview) {
-                        img.src = savedPreview;
+                    // First frame - check for preview or show default if flagged
+                    if (localStorage.getItem('showDefaultClassicFrame') === '1') {
+                        img.src = baseUrl + '/assets/frames/example_frame_1/1213frame_test_2_default.png';
+                        localStorage.removeItem('showDefaultClassicFrame');
                     } else {
-                        img.src = baseUrl + '/assets/frames/' + frameName;
+                        const savedPreview = localStorage.getItem('framePreviewData');
+                        if (savedPreview) {
+                            img.src = savedPreview;
+                        } else {
+                            img.src = baseUrl + '/assets/frames/' + frameName;
+                        }
                     }
                 } else {
                     // Other frames - just show frame

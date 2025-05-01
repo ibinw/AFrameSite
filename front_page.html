@@ -133,6 +133,16 @@
       };
       reader.readAsDataURL(file);
     });
+
+    document.getElementById('browseBtn').addEventListener('click', function(e) {
+      // Clear all relevant localStorage items
+      localStorage.removeItem('originalImage');
+      localStorage.removeItem('cropperState');
+      localStorage.removeItem('framePreviewData');
+      localStorage.removeItem('savedCanvasState');
+      // Set a flag so browse_frames.html knows to show the default image
+      localStorage.setItem('showDefaultClassicFrame', '1');
+    });
   </script>
 </body>
 </html>
