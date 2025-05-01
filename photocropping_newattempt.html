@@ -504,13 +504,14 @@
       cropBtn.disabled = true;
       reEditBtn.disabled = true;
       clearBtn.disabled = true;
-      testImgBtn.disabled = false; // Re-enable test image button when cleared
+      testImgBtn.disabled = false;
       showZoomSlider(false);
       
       // Clear stored data
       localStorage.removeItem('savedCanvasState');
       localStorage.removeItem('originalImage');
       localStorage.removeItem('cropperState');
+      localStorage.removeItem('framePreviewData');
       
       // Update thumbnail
       updateLiveThumb();
