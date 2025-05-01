@@ -3,6 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <title>Browse Frames</title>
+    <script>
+        // Add base URL handling for GitHub Pages
+        const baseUrl = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' 
+            ? '' 
+            : '/AFrameSite';
+    </script>
     <style>
         body { 
             font-family: sans-serif; 
@@ -50,9 +56,13 @@
     <script>
         window.onload = function() {
             const savedPreview = localStorage.getItem('framePreviewData');
+            const firstFrameImg = document.querySelector('.frame-item:first-child .frame-image img');
+            
             if (savedPreview) {
-                const firstFrameImg = document.querySelector('.frame-item:first-child .frame-image img');
                 firstFrameImg.src = savedPreview;
+            } else {
+                // Use baseUrl for default frame image
+                firstFrameImg.src = baseUrl + '/assets/frames/frame_test_2.png';
             }
         };
     </script>
@@ -62,7 +72,8 @@
         <!-- First Frame - Links to current frame preview -->
         <a href="photocropping_newattempt.html" class="frame-item">
             <div class="frame-image">
-                <img src="assets/frames/frame_test_2.png" alt="Classic Frame" style="width: 100%; height: 100%; object-fit: contain;">
+                <!-- Remove src attribute, it will be set by JavaScript -->
+                <img alt="Classic Frame" style="width: 100%; height: 100%; object-fit: contain;">
             </div>
             <h3 class="frame-name">Classic Frame</h3>
             <div class="frame-details">10" x 8" frame</div>

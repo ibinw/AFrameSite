@@ -3,6 +3,12 @@
 <head>
   <meta charset="UTF-8">
   <title>Frame Image Demo</title>
+  <script>
+    // Add this at the very start to handle GitHub Pages paths
+    const baseUrl = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' 
+      ? '' 
+      : '/AFrameSite';
+  </script>
   <style>
     body { font-family: sans-serif; background: #222; color: #eee; text-align: center; }
     #frame-preview { margin: 0; display: block; background: #333; }
@@ -70,8 +76,8 @@
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
   <script>
-    // Frame and transparent area config
-    const FRAME_PATH = 'assets/frames/frame_test_2.png';
+    // Modify frame path to use baseUrl
+    const FRAME_PATH = baseUrl + '/assets/frames/frame_test_2.png';
     const FRAME_SIZE = 1000; // original px
     const CANVAS_SIZE = 400; // display px
     const SCALE = CANVAS_SIZE / FRAME_SIZE;
@@ -242,7 +248,7 @@
 
     testImgBtn.addEventListener('click', function() {
       showZoomSlider(true);
-      cropperImg.src = 'assets/testimagealigns.jpg';
+      cropperImg.src = baseUrl + '/assets/testimagealigns.jpg';
       storeOriginalImage();
       cropperImg.style.display = 'block';
       testImgBtn.disabled = true;
