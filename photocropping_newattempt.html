@@ -182,7 +182,7 @@
       imgErrorMsg.textContent = '';
       if (!file) return;
       showZoomSlider(true);
-      testImgBtn.disabled = true; // Disable test image button when file is loaded
+      testImgBtn.disabled = true;
       const reader = new FileReader();
       reader.onload = function(evt) {
         // Create a temp image to check size
@@ -199,7 +199,7 @@
           }
           updateInfoSection(tempImg);
           cropperImg.src = evt.target.result;
-          storeOriginalImage(); // Store the original image
+          storeOriginalImage();
           cropperImg.style.display = 'block';
           if (cropper) cropper.destroy();
           cropper = new Cropper(cropperImg, {
@@ -233,7 +233,7 @@
           });
           cropBtn.disabled = false;
           reEditBtn.disabled = true;
-          clearBtn.disabled = false;  // Enable clear button when image is loaded
+          clearBtn.disabled = false;
         };
         tempImg.src = evt.target.result;
       };
@@ -245,7 +245,7 @@
       cropperImg.src = 'assets/testimagealigns.jpg';
       storeOriginalImage();
       cropperImg.style.display = 'block';
-      testImgBtn.disabled = true; // Disable test image button after using it
+      testImgBtn.disabled = true;
       if (cropper) cropper.destroy();
       cropper = new Cropper(cropperImg, {
         aspectRatio: 1,
@@ -304,7 +304,7 @@
       cropper = null;
       cropBtn.disabled = true;
       reEditBtn.disabled = false;
-      clearBtn.disabled = false;  // Enable clear button
+      clearBtn.disabled = false;
       updateInfoSection(cropperImg);
 
       // Save the final canvas state
@@ -326,6 +326,7 @@
       const originalImage = localStorage.getItem('originalImage');
       if (originalImage) {
         startEditing(originalImage);
+        showZoomSlider(true);
       }
     });
 
@@ -345,7 +346,8 @@
           console.log('Canvas state restored');
           reEditBtn.disabled = false;
           clearBtn.disabled = false;
-          testImgBtn.disabled = true; // Disable test image button when state is restored
+          testImgBtn.disabled = true;
+          showZoomSlider(false);
         };
         img.onerror = function(e) {
           console.error('Error loading saved image:', e);
