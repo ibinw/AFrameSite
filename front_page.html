@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Welcome</title>
+  <style>
+    body {
+      background: #222;
+      color: #eee;
+      font-family: sans-serif;
+      min-height: 100vh;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+    .center-box {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 30px;
+      margin-top: 10vh;
+    }
+    .main-btn {
+      background: #444;
+      color: #eee;
+      border: none;
+      padding: 18px 48px;
+      border-radius: 8px;
+      font-size: 1.3rem;
+      cursor: pointer;
+      margin: 10px 0;
+      transition: background 0.2s;
+      min-width: 220px;
+      text-align: center;
+    }
+    .main-btn:hover {
+      background: #555;
+    }
+    #imgInput {
+      display: none;
+    }
+    .error-msg {
+      color: #ff6666;
+      margin-top: 10px;
+      font-size: 1.1rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="center-box">
+    <a href="browse_frames.html" class="main-btn" id="browseBtn">Browse Frame</a>
+    <label class="main-btn" for="imgInput" style="margin-bottom:0;">Upload Image</label>
+    <input type="file" id="imgInput" accept="image/*">
+    <div id="imgErrorMsg" class="error-msg"></div>
+  </div>
+  <script>
+    // --- Frame and crop config (same as photocropping_newattempt.html) ---
+    const FRAME_SIZE = 1000;
+    const CANVAS_SIZE = 400;
+    const SCALE = CANVAS_SIZE / FRAME_SIZE;
+    const TRANSPARENT_W = 603;
+    const TRANSPARENT_H = 603;
+    const TRANSPARENT_X = (FRAME_SIZE - TRANSPARENT_W) / 2;
+    const TRANSPARENT_Y = (FRAME_SIZE - TRANSPARENT_H) / 2;
+    // Use the same baseUrl logic as other pages
+    const baseUrl = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' ? '' : '/AFrameSite';
+    const FRAME_PATH = baseUrl + '/assets/frames/frame_test_2.png';
+
+    const imgInput = document.getElementById('imgInput');
+    const imgErrorMsg = document.getElementById('imgErrorMsg');
+
+    imgInput.addEventListener('change', function(e) {
+      const file = e.target.files[0];
+      imgErrorMsg.textContent = '';
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function(evt) {
+        // Create a temp image to check size
+        const tempImg = new window.Image();
+        tempImg.onload = function() {
+          if (tempImg.naturalWidth < 500 || tempImg.naturalHeight < 500) {
+            imgErrorMsg.textContent = 'Image too small. Please upload an image larger than 500x500.';
+            return;
+          }
+          // --- Auto-crop and place logic ---
+          const canvas = document.createElement('canvas');
+          canvas.width = CANVAS_SIZE;
+          canvas.height = CANVAS_SIZE;
+          const ctx = canvas.getContext('2d');
+          // Draw the user image, auto-cropped to fit the transparent area
+          // Calculate scale to cover the transparent area
+          const cropAspect = TRANSPARENT_W / TRANSPARENT_H;
+          const imgAspect = tempImg.naturalWidth / tempImg.naturalHeight;
+          let sx, sy, sw, sh;
+          if (imgAspect > cropAspect) {
+            // Image is wider than crop area
+            sh = tempImg.naturalHeight;
+            sw = sh * cropAspect;
+            sx = (tempImg.naturalWidth - sw) / 2;
+            sy = 0;
+          } else {
+            sw = tempImg.naturalWidth;
+            sh = sw / cropAspect;
+            sx = 0;
+            sy = (tempImg.naturalHeight - sh) / 2;
+          }
+          // Draw cropped user image into the transparent area
+          ctx.clearRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
+          ctx.drawImage(
+            tempImg,
+            sx, sy, sw, sh,
+            TRANSPARENT_X * SCALE, TRANSPARENT_Y * SCALE, TRANSPARENT_W * SCALE, TRANSPARENT_H * SCALE
+          );
+          // Draw the frame on top
+          const frameImg = new window.Image();
+          frameImg.crossOrigin = "anonymous";
+          frameImg.onload = function() {
+            ctx.drawImage(frameImg, 0, 0, FRAME_SIZE, FRAME_SIZE, 0, 0, CANVAS_SIZE, CANVAS_SIZE);
+            // Save preview to localStorage
+            localStorage.setItem('framePreviewData', canvas.toDataURL('image/png'));
+            // Redirect to browse_frames.html
+            window.location.href = 'browse_frames.html';
+          };
+          frameImg.src = FRAME_PATH;
+        };
+        tempImg.src = evt.target.result;
+      };
+      reader.readAsDataURL(file);
+    });
+  </script>
+</body>
+</html>
