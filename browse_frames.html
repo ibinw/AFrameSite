@@ -55,24 +55,39 @@
     </style>
     <script>
         window.onload = function() {
-            const savedPreview = localStorage.getItem('framePreviewData');
-            const firstFrameImg = document.querySelector('.frame-item:first-child .frame-image img');
+            // Get all frame items
+            const frameItems = document.querySelectorAll('.frame-item');
             
-            if (savedPreview) {
-                firstFrameImg.src = savedPreview;
-            } else {
-                // Use baseUrl for default frame image
-                firstFrameImg.src = baseUrl + '/assets/frames/frame_test_2.png';
-            }
+            frameItems.forEach((item, index) => {
+                const img = item.querySelector('img');
+                const frameName = item.getAttribute('data-frame');
+                
+                if (index === 0) {
+                    // First frame - check for preview
+                    const savedPreview = localStorage.getItem('framePreviewData');
+                    if (savedPreview) {
+                        img.src = savedPreview;
+                    } else {
+                        img.src = baseUrl + '/assets/frames/' + frameName;
+                    }
+                } else {
+                    // Other frames - just show frame
+                    img.src = baseUrl + '/assets/frames/' + frameName;
+                }
+
+                // Add click handler to store selected frame
+                item.addEventListener('click', function(e) {
+                    localStorage.setItem('selectedFrame', frameName);
+                });
+            });
         };
     </script>
 </head>
 <body>
     <div class="frames-grid">
-        <!-- First Frame - Links to current frame preview -->
-        <a href="photocropping_newattempt.html" class="frame-item">
+        <!-- First Frame - Classic Frame -->
+        <a href="photocropping_newattempt.html" class="frame-item" data-frame="frame_test_2.png">
             <div class="frame-image">
-                <!-- Remove src attribute, it will be set by JavaScript -->
                 <img alt="Classic Frame" style="width: 100%; height: 100%; object-fit: contain;">
             </div>
             <h3 class="frame-name">Classic Frame</h3>
@@ -80,9 +95,11 @@
             <div class="frame-price">$49</div>
         </a>
 
-        <!-- Placeholder Frame 2 -->
-        <a href="#" class="frame-item">
-            <div class="frame-image"></div>
+        <!-- New Frame Template - Copy this for new frames -->
+        <a href="photocropping_newattempt.html" class="frame-item" data-frame="modern_frame.png">
+            <div class="frame-image">
+                <img alt="Modern Frame" style="width: 100%; height: 100%; object-fit: contain;">
+            </div>
             <h3 class="frame-name">Modern Frame</h3>
             <div class="frame-details">9" x 9" frame</div>
             <div class="frame-price">$45</div>

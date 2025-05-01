@@ -76,8 +76,9 @@
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
   <script>
-    // Modify frame path to use baseUrl
-    const FRAME_PATH = baseUrl + '/assets/frames/frame_test_2.png';
+    // Modify frame path to use selected frame
+    const selectedFrame = localStorage.getItem('selectedFrame') || 'frame_test_2.png';
+    const FRAME_PATH = baseUrl + '/assets/frames/' + selectedFrame;
     const FRAME_SIZE = 1000; // original px
     const CANVAS_SIZE = 400; // display px
     const SCALE = CANVAS_SIZE / FRAME_SIZE;
