@@ -114,11 +114,18 @@
     const config = FRAME_CONFIGS[selectedFrame] || FRAME_CONFIGS['frame_test_2.png'];
     const FRAME_SIZE = config.FRAME_SIZE;
     const CANVAS_SIZE = config.CANVAS_SIZE;
-    const SCALE = CANVAS_SIZE / FRAME_SIZE;
     const TRANSPARENT_W = config.TRANSPARENT_W;
     const TRANSPARENT_H = config.TRANSPARENT_H;
-    const TRANSPARENT_X = config.TRANSPARENT_X;
-    const TRANSPARENT_Y = config.TRANSPARENT_Y;
+
+    // Auto-center if not specified
+    const TRANSPARENT_X = (typeof config.TRANSPARENT_X !== 'undefined')
+      ? config.TRANSPARENT_X
+      : (FRAME_SIZE - TRANSPARENT_W) / 2;
+    const TRANSPARENT_Y = (typeof config.TRANSPARENT_Y !== 'undefined')
+      ? config.TRANSPARENT_Y
+      : (FRAME_SIZE - TRANSPARENT_H) / 2;
+
+    const SCALE = CANVAS_SIZE / FRAME_SIZE;
 
     // Elements
     const imgInput = document.getElementById('imgInput');
