@@ -57,6 +57,18 @@
     <button id="clearCacheBtn" class="main-btn" style="background:#a33;">Clear All Cache</button>
   </div>
   <script>
+    // Automatically clear all relevant cache on page load
+    (function() {
+      Object.keys(localStorage).forEach(function(key) {
+        if (key.startsWith('framePreviewData_') || key.startsWith('savedCanvasState_')) {
+          localStorage.removeItem(key);
+        }
+      });
+      localStorage.removeItem('originalImage');
+      localStorage.removeItem('cropperState');
+      localStorage.removeItem('selectedFrame');
+    })();
+
     // --- Frame and crop config (same as photocropping_newattempt.html) ---
     const FRAME_SIZE = 1000;
     const CANVAS_SIZE = 400;
