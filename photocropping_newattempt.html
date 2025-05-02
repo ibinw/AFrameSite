@@ -335,15 +335,15 @@
       clearBtn.disabled = false;
       updateInfoSection(cropperImg);
 
-      // Save the final canvas state
+      // Save the final canvas state with frame-specific key
       try {
         const finalCanvas = document.createElement('canvas');
         finalCanvas.width = canvas.width;
         finalCanvas.height = canvas.height;
         const finalCtx = finalCanvas.getContext('2d');
         finalCtx.drawImage(canvas, 0, 0);
-        localStorage.setItem('savedCanvasState', finalCanvas.toDataURL('image/png'));
-        localStorage.setItem('framePreviewData', finalCanvas.toDataURL('image/png'));
+        localStorage.setItem('savedCanvasState_' + selectedFrame, finalCanvas.toDataURL('image/png'));
+        localStorage.setItem('framePreviewData_' + selectedFrame, finalCanvas.toDataURL('image/png'));
       } catch (e) {
         console.error('Error saving canvas state:', e);
       }
@@ -361,9 +361,9 @@
     // Modify restore function
     function restoreCanvasState() {
       console.log('Attempting to restore canvas state...');
-      const savedData = localStorage.getItem('savedCanvasState');
+      const savedData = localStorage.getItem('savedCanvasState_' + selectedFrame);
       if (savedData) {
-        console.log('Found saved canvas state');
+        console.log('Found saved canvas state for', selectedFrame);
         const img = new Image();
         img.crossOrigin = "anonymous";
         img.onload = function() {
@@ -384,7 +384,7 @@
         };
         img.src = savedData;
       } else {
-        console.log('No saved canvas state found');
+        console.log('No saved canvas state found for', selectedFrame);
         reEditBtn.disabled = true;
         clearBtn.disabled = true;
         testImgBtn.disabled = false; // Enable test image button if no state found
@@ -538,10 +538,10 @@
       showZoomSlider(false);
       
       // Clear stored data
-      localStorage.removeItem('savedCanvasState');
+      localStorage.removeItem('savedCanvasState_' + selectedFrame);
       localStorage.removeItem('originalImage');
       localStorage.removeItem('cropperState');
-      localStorage.removeItem('framePreviewData');
+      localStorage.removeItem('framePreviewData_' + selectedFrame);
       
       // Update thumbnail
       updateLiveThumb();

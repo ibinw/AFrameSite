@@ -58,29 +58,17 @@
             // Get all frame items
             const frameItems = document.querySelectorAll('.frame-item');
             
-            frameItems.forEach((item, index) => {
+            frameItems.forEach((item) => {
                 const img = item.querySelector('img');
                 const frameName = item.getAttribute('data-frame');
-                if (!img) return; // Skip if no <img> in this frame-item
-                
-                if (index === 0) {
-                    // First frame - check for preview or show default if flagged
-                    if (localStorage.getItem('showDefaultClassicFrame') === '1') {
-                        img.src = baseUrl + '/assets/frames/example_frame_1/1213frame_test_2_default.png';
-                        localStorage.removeItem('showDefaultClassicFrame');
-                    } else {
-                        const savedPreview = localStorage.getItem('framePreviewData');
-                        if (savedPreview) {
-                            img.src = savedPreview;
-                        } else {
-                            img.src = baseUrl + '/assets/frames/' + frameName;
-                        }
-                    }
+                if (!img || !frameName) return;
+                const previewKey = 'framePreviewData_' + frameName;
+                const savedPreview = localStorage.getItem(previewKey);
+                if (savedPreview) {
+                    img.src = savedPreview;
                 } else {
-                    // Other frames - just show frame
                     img.src = baseUrl + '/assets/frames/' + frameName;
                 }
-
                 // Add click handler to store selected frame
                 item.addEventListener('click', function(e) {
                     localStorage.setItem('selectedFrame', frameName);

@@ -120,10 +120,10 @@
           frameImg.crossOrigin = "anonymous";
           frameImg.onload = function() {
             ctx.drawImage(frameImg, 0, 0, FRAME_SIZE, FRAME_SIZE, 0, 0, CANVAS_SIZE, CANVAS_SIZE);
-            // Save preview to localStorage
-            localStorage.setItem('framePreviewData', canvas.toDataURL('image/png'));
-            // Also save the composite to savedCanvasState for re-cropping
-            localStorage.setItem('savedCanvasState', canvas.toDataURL('image/png'));
+            // Save preview to localStorage with frame-specific key
+            localStorage.setItem('framePreviewData_frame_test_2.png', canvas.toDataURL('image/png'));
+            // Also save the composite to savedCanvasState for re-cropping with frame-specific key
+            localStorage.setItem('savedCanvasState_frame_test_2.png', canvas.toDataURL('image/png'));
             // Redirect to browse_frames.html
             window.location.href = 'browse_frames.html';
           };
