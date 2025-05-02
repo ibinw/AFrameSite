@@ -94,10 +94,10 @@
       'modern_frame.png': {
         FRAME_SIZE: 1000,
         CANVAS_SIZE: 400,
-        TRANSPARENT_W: 530, // <-- Set your actual modern frame transparent width here
-        TRANSPARENT_H: 753, // <-- Set your actual modern frame transparent height here
-        TRANSPARENT_X: 150, // <-- Set your actual modern frame transparent X here
-        TRANSPARENT_Y: 150  // <-- Set your actual modern frame transparent Y here
+        TRANSPARENT_W: 530,
+        TRANSPARENT_H: 753,
+        TRANSPARENT_X: 235,
+        TRANSPARENT_Y: 123.5
       }
       // Add more frames as needed
     };
@@ -234,7 +234,7 @@
           cropperImg.style.display = 'block';
           if (cropper) cropper.destroy();
           cropper = new Cropper(cropperImg, {
-            aspectRatio: 1,
+            aspectRatio: TRANSPARENT_W / TRANSPARENT_H,
             viewMode: 1,
             autoCropArea: 1,
             dragMode: 'move',
@@ -279,7 +279,7 @@
       testImgBtn.disabled = true;
       if (cropper) cropper.destroy();
       cropper = new Cropper(cropperImg, {
-        aspectRatio: 1,
+        aspectRatio: TRANSPARENT_W / TRANSPARENT_H,
         viewMode: 1,
         autoCropArea: 1,
         dragMode: 'move',
@@ -476,7 +476,7 @@
       cropperImg.style.display = 'block';
       if (cropper) cropper.destroy();
       cropper = new Cropper(cropperImg, {
-        aspectRatio: 1,
+        aspectRatio: TRANSPARENT_W / TRANSPARENT_H,
         viewMode: 1,
         autoCropArea: 1,
         dragMode: 'move',
