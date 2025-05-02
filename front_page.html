@@ -54,6 +54,7 @@
     <label class="main-btn" for="imgInput" style="margin-bottom:0;">Upload Image</label>
     <input type="file" id="imgInput" accept="image/*">
     <div id="imgErrorMsg" class="error-msg"></div>
+    <button id="clearCacheBtn" class="main-btn" style="background:#a33;">Clear All Cache</button>
   </div>
   <script>
     // --- Frame and crop config (same as photocropping_newattempt.html) ---
@@ -142,6 +143,19 @@
       localStorage.removeItem('savedCanvasState');
       // Set a flag so browse_frames.html knows to show the default image
       localStorage.setItem('showDefaultClassicFrame', '1');
+    });
+
+    document.getElementById('clearCacheBtn').addEventListener('click', function() {
+      // Remove all frame-specific and general keys
+      Object.keys(localStorage).forEach(function(key) {
+        if (key.startsWith('framePreviewData_') || key.startsWith('savedCanvasState_')) {
+          localStorage.removeItem(key);
+        }
+      });
+      localStorage.removeItem('originalImage');
+      localStorage.removeItem('cropperState');
+      localStorage.removeItem('selectedFrame');
+      alert('All frame previews and cache cleared!');
     });
   </script>
 </body>
