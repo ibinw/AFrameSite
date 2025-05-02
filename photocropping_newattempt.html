@@ -42,6 +42,7 @@
   <link  href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" rel="stylesheet"/>
 </head>
 <body>
+  <div id="debug-info" style="background:#333;color:#ff0;padding:8px 16px;margin:10px auto 0 auto;max-width:600px;border-radius:6px;font-size:14px;text-align:left;"></div>
   <h2>Frame Demo (Core Functions Only)</h2>
   <div style="display: flex; justify-content: center; align-items: flex-start; gap: 30px;">
     <div id="preview-thumbs" style="display: flex; flex-direction: column; gap: 15px; align-items: center;">
@@ -79,13 +80,36 @@
     // Modify frame path to use selected frame
     const selectedFrame = localStorage.getItem('selectedFrame') || 'frame_test_2.png';
     const FRAME_PATH = baseUrl + '/assets/frames/' + selectedFrame;
-    const FRAME_SIZE = 1000; // original px
-    const CANVAS_SIZE = 400; // display px
+
+    // Frame configs for different frames
+    const FRAME_CONFIGS = {
+      'frame_test_2.png': {
+        FRAME_SIZE: 1000,
+        CANVAS_SIZE: 400,
+        TRANSPARENT_W: 603,
+        TRANSPARENT_H: 603,
+        TRANSPARENT_X: (1000 - 603) / 2,
+        TRANSPARENT_Y: (1000 - 603) / 2
+      },
+      'modern_frame.png': {
+        FRAME_SIZE: 1000,
+        CANVAS_SIZE: 400,
+        TRANSPARENT_W: 700, // <-- Set your actual modern frame transparent width here
+        TRANSPARENT_H: 700, // <-- Set your actual modern frame transparent height here
+        TRANSPARENT_X: 150, // <-- Set your actual modern frame transparent X here
+        TRANSPARENT_Y: 150  // <-- Set your actual modern frame transparent Y here
+      }
+      // Add more frames as needed
+    };
+    // Use config for selected frame, or fallback to classic
+    const config = FRAME_CONFIGS[selectedFrame] || FRAME_CONFIGS['frame_test_2.png'];
+    const FRAME_SIZE = config.FRAME_SIZE;
+    const CANVAS_SIZE = config.CANVAS_SIZE;
     const SCALE = CANVAS_SIZE / FRAME_SIZE;
-    const TRANSPARENT_W = 603;
-    const TRANSPARENT_H = 603;
-    const TRANSPARENT_X = (FRAME_SIZE - TRANSPARENT_W) / 2;
-    const TRANSPARENT_Y = (FRAME_SIZE - TRANSPARENT_H) / 2;
+    const TRANSPARENT_W = config.TRANSPARENT_W;
+    const TRANSPARENT_H = config.TRANSPARENT_H;
+    const TRANSPARENT_X = config.TRANSPARENT_X;
+    const TRANSPARENT_Y = config.TRANSPARENT_Y;
 
     // Elements
     const imgInput = document.getElementById('imgInput');
@@ -525,6 +549,20 @@
 
     // Add clear button click handler
     clearBtn.addEventListener('click', clearImage);
+
+    // Show debug info
+    function showDebugInfo() {
+      const debugDiv = document.getElementById('debug-info');
+      debugDiv.innerHTML = `<b>Selected Frame:</b> ${selectedFrame}<br>
+        <b>FRAME_PATH:</b> ${FRAME_PATH}<br>
+        <b>FRAME_SIZE:</b> ${FRAME_SIZE}<br>
+        <b>CANVAS_SIZE:</b> ${CANVAS_SIZE}<br>
+        <b>TRANSPARENT_W:</b> ${TRANSPARENT_W}<br>
+        <b>TRANSPARENT_H:</b> ${TRANSPARENT_H}<br>
+        <b>TRANSPARENT_X:</b> ${TRANSPARENT_X}<br>
+        <b>TRANSPARENT_Y:</b> ${TRANSPARENT_Y}`;
+    }
+    showDebugInfo();
   </script>
 </body>
 </html>
