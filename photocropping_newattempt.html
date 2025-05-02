@@ -85,7 +85,7 @@
     const FRAME_CONFIGS = {
       'frame_test_2.png': {
         FRAME_SIZE: 1000,
-        CANVAS_SIZE: 1000,
+        CANVAS_SIZE: 400,
         TRANSPARENT_W: 603,
         TRANSPARENT_H: 603,
         TRANSPARENT_X: (1000 - 603) / 2,
@@ -98,8 +98,17 @@
         TRANSPARENT_H: 753,
         TRANSPARENT_X: 235,
         TRANSPARENT_Y: 123.5
-      }
+      },
       // Add more frames as needed
+      'vintage_frame.png': {
+        FRAME_SIZE: 1000,
+        CANVAS_SIZE: 400,
+        TRANSPARENT_W: 530,
+        TRANSPARENT_H: 753,
+        TRANSPARENT_X: 235,
+        TRANSPARENT_Y: 123.5
+      }
+
     };
     // Use config for selected frame, or fallback to classic
     const config = FRAME_CONFIGS[selectedFrame] || FRAME_CONFIGS['frame_test_2.png'];
