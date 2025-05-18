@@ -53,13 +53,118 @@
     .continue-shopping-btn:hover {
       background: #24995a;
     }
+    .form-section {
+      margin-bottom: 22px;
+      text-align: left;
+    }
+    .form-label {
+      font-size: 1.1rem;
+      font-weight: 500;
+      margin-bottom: 7px;
+      display: block;
+      color: #222;
+    }
+    .form-input {
+      width: 100%;
+      padding: 12px 14px;
+      border: 1px solid #cfd8dc;
+      border-radius: 6px;
+      font-size: 1rem;
+      margin-bottom: 12px;
+      background: #f9f9f9;
+      color: #222;
+      box-sizing: border-box;
+      transition: border 0.2s;
+    }
+    .form-input:focus {
+      border: 1.5px solid #2a7;
+      outline: none;
+      background: #fff;
+    }
+    .checkout-btn {
+      display: inline-block;
+      padding: 14px 38px;
+      border-radius: 30px;
+      font-size: 1.15rem;
+      font-weight: 600;
+      border: 2px solid #002856;
+      cursor: pointer;
+      text-align: center;
+      text-decoration: none;
+      transition: background 0.2s, color 0.2s, border 0.2s;
+    }
+    .checkout-btn.primary {
+      background: #ffe600;
+      color: #002856;
+      border-color: #ffe600;
+    }
+    .checkout-btn.primary:hover {
+      background: #fff200;
+      color: #002856;
+      border-color: #ffe600;
+    }
+    .checkout-btn.secondary {
+      background: #fff;
+      color: #002856;
+      border-color: #002856;
+    }
+    .checkout-btn.secondary:hover {
+      background: #f7f7f7;
+      color: #002856;
+      border-color: #002856;
+    }
   </style>
 </head>
 <body>
   <div class="checkout-container">
     <div class="checkout-title">Checkout</div>
+    <div id="checkout-images" style="margin-bottom: 30px;"></div>
+    <form id="checkout-form" autocomplete="on" style="margin-bottom:32px;">
+      <div class="form-section">
+        <label for="email" class="form-label">Email</label>
+        <input type="email" id="email" name="email" class="form-input" placeholder="Email" required>
+      </div>
+      <div class="form-section">
+        <div class="form-label">Shipping Address</div>
+        <div style="display:flex;gap:12px;">
+          <input type="text" id="firstName" name="firstName" class="form-input" placeholder="First Name" required style="flex:1;">
+          <input type="text" id="lastName" name="lastName" class="form-input" placeholder="Last Name" required style="flex:1;">
+        </div>
+        <input type="text" id="address1" name="address1" class="form-input" placeholder="Address Line 1" required>
+        <input type="text" id="address2" name="address2" class="form-input" placeholder="Address Line 2 (optional)">
+        <div style="display:flex;gap:12px;">
+          <input type="text" id="city" name="city" class="form-input" placeholder="City" required style="flex:2;">
+          <select id="province" name="province" class="form-input" required style="flex:1;">
+            <option value="">Province</option>
+            <option value="AB">Alberta</option>
+            <option value="BC">British Columbia</option>
+            <option value="MB">Manitoba</option>
+            <option value="NB">New Brunswick</option>
+            <option value="NL">Newfoundland and Labrador</option>
+            <option value="NS">Nova Scotia</option>
+            <option value="ON">Ontario</option>
+            <option value="PE">Prince Edward Island</option>
+            <option value="QC">Quebec</option>
+            <option value="SK">Saskatchewan</option>
+            <option value="NT">Northwest Territories</option>
+            <option value="NU">Nunavut</option>
+            <option value="YT">Yukon</option>
+          </select>
+          <input type="text" id="zip" name="zip" class="form-input" placeholder="Zip Code" required style="flex:1;">
+        </div>
+        <input type="text" id="phone" name="phone" class="form-input" placeholder="Phone Number (for delivery issues)" required>
+      </div>
+      <div class="form-section" style="margin-bottom:18px;">
+        <label style="display:flex;align-items:center;gap:7px;font-size:1rem;cursor:pointer;">
+          <input type="checkbox" id="gift" name="gift" style="width:18px;height:18px;"> testplaceholder <span style="font-size:1.2em;">🎁</span>
+        </label>
+      </div>
+      <div style="display:flex;gap:18px;justify-content:center;">
+        <a href="front_page.html" class="checkout-btn secondary">Keep Shopping</a>
+        <button type="submit" class="checkout-btn primary">Payment</button>
+      </div>
+    </form>
     <div class="empty-cart-msg">There are currently no frames in your cart.</div>
-    <a href="front_page.html" class="continue-shopping-btn">Continue shopping</a>
   </div>
   <script>
     // Try to get the selected frame and images from localStorage
