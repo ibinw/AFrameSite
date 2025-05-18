@@ -226,6 +226,21 @@
     // Redirect to payment.html on Payment button click
     document.getElementById('checkout-form').addEventListener('submit', function(e) {
       e.preventDefault();
+      // Save shipping details to localStorage
+      const form = e.target;
+      const shipping = {
+        email: form.email.value,
+        firstName: form.firstName.value,
+        lastName: form.lastName.value,
+        address1: form.address1.value,
+        address2: form.address2.value,
+        city: form.city.value,
+        province: form.province.value,
+        zip: form.zip.value,
+        phone: form.phone.value,
+        gift: form.gift.checked
+      };
+      localStorage.setItem('checkoutShipping', JSON.stringify(shipping));
       window.location.href = 'payment.html';
     });
   </script>

@@ -61,8 +61,50 @@
 <body>
   <div class="payment-container">
     <div class="payment-title">Payment</div>
+    <div id="shipping-details" style="margin-bottom: 28px;"></div>
+    <div id="order-summary" style="margin-bottom: 28px;"></div>
     <div class="empty-cart-msg">There are currently no frames in your cart.</div>
     <a href="front_page.html" class="continue-shopping-btn">Continue shopping</a>
   </div>
+  <script>
+    // Retrieve shipping info from localStorage
+    const shipping = JSON.parse(localStorage.getItem('checkoutShipping') || '{}');
+    const shippingDiv = document.getElementById('shipping-details');
+    if (shipping && shipping.email) {
+      shippingDiv.innerHTML = `
+        <div style='text-align:left;margin-bottom:10px;'>
+          <div style='font-size:1.15rem;font-weight:600;color:#ffe600;margin-bottom:8px;'>Shipping Details</div>
+          <div><b>Email:</b> ${shipping.email}</div>
+          <div><b>Name:</b> ${shipping.firstName || ''} ${shipping.lastName || ''}</div>
+          <div><b>Address:</b> ${shipping.address1 || ''}${shipping.address2 ? ', ' + shipping.address2 : ''}</div>
+          <div><b>City:</b> ${shipping.city || ''}</div>
+          <div><b>Province:</b> ${shipping.province || ''}</div>
+          <div><b>Zip:</b> ${shipping.zip || ''}</div>
+          <div><b>Phone:</b> ${shipping.phone || ''}</div>
+          <div><b>Gift:</b> ${shipping.gift ? 'Yes 🎁' : 'No'}</div>
+        </div>
+      `;
+    } else {
+      shippingDiv.style.display = 'none';
+    }
+
+    // Retrieve order summary (images) from localStorage
+    const selectedFrame = localStorage.getItem('selectedFrame') || 'frame_test_2.png';
+    const originalImage = localStorage.getItem('originalImage');
+    const framedImage = localStorage.getItem('savedCanvasState_' + selectedFrame);
+    const orderDiv = document.getElementById('order-summary');
+    if (originalImage && framedImage) {
+      orderDiv.innerHTML = `
+        <div style='text-align:left;margin-bottom:10px;'>
+          <div style='font-size:1.15rem;font-weight:600;color:#ffe600;margin-bottom:8px;'>Order Summary</div>
+          <div><span style='color:#eee;'>Your Framed Preview:</span><br><img src="${framedImage}" alt="Framed" style="max-width:140px;max-height:140px;border-radius:8px;border:2px solid #ffe600;background:#181818;box-shadow:0 2px 12px rgba(0,0,0,0.13);margin-top:4px;"></div>
+        </div>
+      `;
+      document.querySelector('.empty-cart-msg').style.display = 'none';
+    } else {
+      orderDiv.style.display = 'none';
+      document.querySelector('.empty-cart-msg').style.display = '';
+    }
+  </script>
 </body>
 </html> 
