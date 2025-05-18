@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Payment - Keepsake Frames</title>
+  <style>
+    body {
+      background: #222;
+      color: #eee;
+      font-family: 'Segoe UI', Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+    }
+    .payment-container {
+      background: #292929;
+      margin-top: 80px;
+      padding: 48px 36px 36px 36px;
+      border-radius: 12px;
+      box-shadow: 0 2px 16px rgba(0,0,0,0.18);
+      max-width: 420px;
+      width: 100%;
+      text-align: center;
+    }
+    .payment-title {
+      font-size: 2rem;
+      font-weight: 600;
+      margin-bottom: 18px;
+      color: #eee;
+      letter-spacing: 0.5px;
+    }
+    .empty-cart-msg {
+      font-size: 1.2rem;
+      color: #ff6666;
+      margin-bottom: 30px;
+    }
+    .continue-shopping-btn {
+      display: inline-block;
+      background: #292929;
+      color: #eee;
+      border: 2px solid #ffe600;
+      text-decoration: none;
+      padding: 14px 38px;
+      border-radius: 30px;
+      font-size: 1.15rem;
+      font-weight: 600;
+      transition: background 0.2s, color 0.2s, border 0.2s;
+      cursor: pointer;
+    }
+    .continue-shopping-btn:hover {
+      background: #181818;
+      color: #ffe600;
+      border-color: #ffe600;
+    }
+  </style>
+</head>
+<body>
+  <div class="payment-container">
+    <div class="payment-title">Payment</div>
+    <div class="empty-cart-msg">There are currently no frames in your cart.</div>
+    <a href="front_page.html" class="continue-shopping-btn">Continue shopping</a>
+  </div>
+</body>
+</html> 
