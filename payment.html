@@ -56,6 +56,35 @@
       color: #ffe600;
       border-color: #ffe600;
     }
+    .form-section {
+      margin-bottom: 22px;
+      text-align: left;
+    }
+    .form-label {
+      font-size: 1.1rem;
+      font-weight: 500;
+      margin-bottom: 7px;
+      display: block;
+      color: #eee;
+    }
+    .form-input {
+      width: 100%;
+      padding: 12px 14px;
+      border: 1px solid #444;
+      border-radius: 6px;
+      font-size: 1rem;
+      margin-bottom: 12px;
+      background: #181818;
+      color: #eee;
+      box-sizing: border-box;
+      transition: border 0.2s, background 0.2s;
+    }
+    .form-input:focus {
+      border: 1.5px solid #ffe600;
+      outline: none;
+      background: #222;
+      color: #eee;
+    }
   </style>
 </head>
 <body>
@@ -64,6 +93,13 @@
     <div id="shipping-details" style="margin-bottom: 28px;"></div>
     <div id="order-summary" style="margin-bottom: 28px;"></div>
     <div class="empty-cart-msg">There are currently no frames in your cart.</div>
+    <form id="payment-form" autocomplete="on" style="margin-bottom:18px;">
+      <div class="form-section">
+        <label for="cc-number" class="form-label">Credit Card Number</label>
+        <input type="text" id="cc-number" name="cc-number" class="form-input" placeholder="Card Number" maxlength="19" inputmode="numeric" pattern="[0-9 ]*" required style="letter-spacing:2px;">
+      </div>
+      <button type="submit" class="checkout-btn primary" style="width:100%;margin-top:10px;">Place Order</button>
+    </form>
     <a href="front_page.html" class="continue-shopping-btn">Continue shopping</a>
   </div>
   <script>
