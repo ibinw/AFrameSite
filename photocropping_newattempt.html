@@ -58,6 +58,7 @@
         <button id="cropBtn" disabled>Crop & Place in Frame</button>
         <button id="reEditBtn" disabled>Re-edit Image</button>
         <button id="clearBtn" disabled>Clear Image</button>
+        <button id="addToCartBtn" class="back-button" style="background:#2a7; margin-top: 10px;">Add to Cart</button>
         <br/>
         <label for="zoomSlider" id="zoomSliderLabel">Zoom:</label>
         <input type="range" id="zoomSlider" min="1" max="3" step="0.01" value="1" style="width:200px;">
@@ -71,7 +72,7 @@
         <img id="frame-preview-static" src="" style="display:none; position:absolute; left:0; top:0; width:400px; height:400px; object-fit:contain; background:#333;"/>
       </div>
       <div id="infoSection" style="margin: 20px auto; color: #eee; background: #333; max-width: 420px; padding: 10px; border-radius: 8px; font-size: 15px; text-align: left;"></div>
-      <div class="placeholder">[Add to Cart, Region Selector, etc. Placeholder]</div>
+      <div class="placeholder" style="display:none;">[Add to Cart, Region Selector, etc. Placeholder]</div>
     </div>
   </div>
 
@@ -577,6 +578,11 @@
         <b>TRANSPARENT_Y:</b> ${TRANSPARENT_Y}`;
     }
     showDebugInfo();
+
+    // Add to Cart button handler
+    document.getElementById('addToCartBtn').addEventListener('click', function() {
+      window.location.href = 'checkout.html';
+    });
   </script>
 </body>
 </html>

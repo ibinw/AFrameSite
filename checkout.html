@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Checkout - Keepsake Frames</title>
+  <style>
+    body {
+      background: #f7f7f7;
+      color: #222;
+      font-family: 'Segoe UI', Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+    }
+    .checkout-container {
+      background: #fff;
+      margin-top: 60px;
+      padding: 40px 32px 32px 32px;
+      border-radius: 12px;
+      box-shadow: 0 2px 16px rgba(0,0,0,0.07);
+      max-width: 420px;
+      width: 100%;
+      text-align: center;
+    }
+    .checkout-title {
+      font-size: 2rem;
+      font-weight: 600;
+      margin-bottom: 18px;
+      color: #222;
+    }
+    .empty-cart-msg {
+      font-size: 1.2rem;
+      color: #666;
+      margin-bottom: 30px;
+    }
+    .continue-shopping-btn {
+      display: inline-block;
+      background: #2a7;
+      color: #fff;
+      text-decoration: none;
+      padding: 12px 32px;
+      border-radius: 6px;
+      font-size: 1.1rem;
+      font-weight: 500;
+      transition: background 0.2s;
+      border: none;
+      cursor: pointer;
+    }
+    .continue-shopping-btn:hover {
+      background: #24995a;
+    }
+  </style>
+</head>
+<body>
+  <div class="checkout-container">
+    <div class="checkout-title">Checkout</div>
+    <div class="empty-cart-msg">There are currently no frames in your cart.</div>
+    <a href="front_page.html" class="continue-shopping-btn">Continue shopping</a>
+  </div>
+  <script>
+    // Try to get the selected frame and images from localStorage
+    const selectedFrame = localStorage.getItem('selectedFrame') || 'frame_test_2.png';
+    const originalImage = localStorage.getItem('originalImage');
+    const framedImage = localStorage.getItem('savedCanvasState_' + selectedFrame);
+    const imagesDiv = document.getElementById('checkout-images');
+    const emptyMsg = document.querySelector('.empty-cart-msg');
+
+    if (originalImage && framedImage) {
+      imagesDiv.innerHTML = `
+        <div style="margin-bottom:18px;">
+          <div style='font-size:1.1rem;margin-bottom:6px;color:#444;'>Your Uploaded Image:</div>
+          <img src="${originalImage}" alt="Uploaded" style="max-width:180px;max-height:180px;border-radius:8px;border:1px solid #ccc;background:#fafafa;box-shadow:0 1px 6px rgba(0,0,0,0.06);margin-bottom:16px;">
+        </div>
+        <div>
+          <div style='font-size:1.1rem;margin-bottom:6px;color:#444;'>Your Framed Preview:</div>
+          <img src="${framedImage}" alt="Framed" style="max-width:220px;max-height:220px;border-radius:8px;border:2px solid #2a7;background:#fff;box-shadow:0 2px 12px rgba(0,0,0,0.09);">
+        </div>
+      `;
+      emptyMsg.style.display = 'none';
+    } else {
+      imagesDiv.style.display = 'none';
+      emptyMsg.style.display = '';
+    }
+  </script>
+</body>
+</html> 
