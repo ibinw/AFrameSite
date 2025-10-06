@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Browse Frames</title>
+    <script src="src/utils/frameConfig.js"></script>
     <script>
         // Add base URL handling for GitHub Pages
         const baseUrl = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' 
@@ -54,37 +55,77 @@
         }
     </style>
     <script>
-        window.onload = function() {
-            // Example images for each frame
-            const exampleImages = {
-                'frame_test_2.png': 'assets/frames/example_frame_1_1x1_classic_horizontal.png',
-                'modern_frame.png': 'assets/frames/example_frame_2_4x6_modern_vertical.jpg',
-                'vintage_frame.png': 'assets/frames/example_frame_3_4x6_vintage_horizontal.png',
-                'minimalist_frame.png': 'assets/frames/example_frame_4_5x7_Minimalist_vertical.png',
-                'rustic_frame.png': 'assets/frames/example_frame_5_8x10_Rustic_horizontal.png'
-            };
-            // Get all frame items
-            const frameItems = document.querySelectorAll('.frame-item');
-            
-            frameItems.forEach((item) => {
-                const img = item.querySelector('img');
-                const frameName = item.getAttribute('data-frame');
-                if (!img || !frameName) return;
-                const previewKey = 'framePreviewData_' + frameName;
-                const savedPreview = localStorage.getItem(previewKey);
-                if (savedPreview) {
-                    img.src = savedPreview;
-                } else if (exampleImages[frameName]) {
-                    img.src = exampleImages[frameName];
-                } else {
-                    img.src = baseUrl + '/assets/frames/' + frameName;
-                }
-                // Add click handler to store selected frame
-                item.addEventListener('click', function(e) {
-                    localStorage.setItem('selectedFrame', frameName);
+        async function loadFrames() {
+            try {
+                const frames = await frameConfigManager.getFrames();
+                const framesGrid = document.getElementById('framesGrid');
+                
+                framesGrid.innerHTML = '';
+                
+                frames.forEach(frame => {
+                    const frameElement = createFrameElement(frame);
+                    framesGrid.appendChild(frameElement);
                 });
+                
+                console.log(`Loaded ${frames.length} frames from config`);
+            } catch (error) {
+                console.error('Error loading frames:', error);
+                // Fallback to static content if config fails
+                loadFallbackFrames();
+            }
+        }
+        
+        function createFrameElement(frame) {
+            const frameItem = document.createElement('a');
+            frameItem.href = 'photocropping_newattempt.html';
+            frameItem.className = 'frame-item';
+            frameItem.setAttribute('data-frame', frame.filename);
+            
+            frameItem.innerHTML = `
+                <div class="frame-image">
+                    <img alt="${frame.name}" style="width: 100%; height: 100%; object-fit: contain;">
+                </div>
+                <h3 class="frame-name">${frame.name}</h3>
+                <div class="frame-details">${frame.size}</div>
+                <div class="frame-price">$${frame.price}</div>
+            `;
+            
+            // Set up image source and click handler
+            const img = frameItem.querySelector('img');
+            const previewKey = 'framePreviewData_' + frame.filename;
+            const savedPreview = localStorage.getItem(previewKey);
+            
+            if (savedPreview) {
+                img.src = savedPreview;
+            } else if (frame.exampleImage) {
+                img.src = baseUrl + '/' + frame.exampleImage;
+            } else {
+                img.src = frameConfigManager.getFramePath(frame.filename);
+            }
+            
+            // Add click handler to store selected frame
+            frameItem.addEventListener('click', function(e) {
+                localStorage.setItem('selectedFrame', frame.filename);
             });
-        };
+            
+            return frameItem;
+        }
+        
+        function loadFallbackFrames() {
+            const framesGrid = document.getElementById('framesGrid');
+            framesGrid.innerHTML = `
+                <a href="photocropping_newattempt.html" class="frame-item" data-frame="frame_test_2.png">
+                    <div class="frame-image">
+                        <img alt="Classic Frame" style="width: 100%; height: 100%; object-fit: contain;" src="${baseUrl}/assets/frames/frame_test_2.png">
+                    </div>
+                    <h3 class="frame-name">Classic Frame</h3>
+                    <div class="frame-details">10" x 8" frame</div>
+                    <div class="frame-price">$49</div>
+                </a>
+            `;
+        }
+        
+        window.onload = loadFrames;
     </script>
 </head>
 <body>
@@ -105,56 +146,8 @@
             &larr; Back to Front Page
         </a>
     </div>
-    <div class="frames-grid">
-        <!-- First Frame - Classic Frame -->
-        <a href="photocropping_newattempt.html" class="frame-item" data-frame="frame_test_2.png">
-            <div class="frame-image">
-                <img alt="Classic Frame" style="width: 100%; height: 100%; object-fit: contain;">
-            </div>
-            <h3 class="frame-name">Classic Frame</h3>
-            <div class="frame-details">10" x 8" frame</div>
-            <div class="frame-price">$49</div>
-        </a>
-
-        <!-- New Frame Template - Copy this for new frames -->
-        <a href="photocropping_newattempt.html" class="frame-item" data-frame="modern_frame.png">
-            <div class="frame-image">
-                <img alt="Modern Frame" style="width: 100%; height: 100%; object-fit: contain;">
-            </div>
-            <h3 class="frame-name">Modern Frame</h3>
-            <div class="frame-details">9" x 9" frame</div>
-            <div class="frame-price">$45</div>
-        </a>
-
-        <!-- Placeholder Frame 3 -->
-        <a href="photocropping_newattempt.html" class="frame-item" data-frame="vintage_frame.png">
-            <div class="frame-image">
-                <img alt="Vintage Frame" style="width: 100%; height: 100%; object-fit: contain;">
-            </div>
-            <h3 class="frame-name">Vintage Frame</h3>
-            <div class="frame-details">11" x 9" frame</div>
-            <div class="frame-price">$69</div>
-        </a>
-
-        <!-- Placeholder Frame 4 -->
-        <a href="photocropping_newattempt.html" class="frame-item" data-frame="minimalist_frame.png">
-            <div class="frame-image">
-                <img alt="Minimalist Frame" style="width: 100%; height: 100%; object-fit: contain;">
-            </div>
-            <h3 class="frame-name">Minimalist Frame</h3>
-            <div class="frame-details">10" x 10" frame</div>
-            <div class="frame-price">$55</div>
-        </a>
-
-        <!-- Placeholder Frame 5 -->
-        <a href="photocropping_newattempt.html" class="frame-item" data-frame="rustic_frame.png">
-            <div class="frame-image">
-                <img alt="Rustic Frame" style="width: 100%; height: 100%; object-fit: contain;">
-            </div>
-            <h3 class="frame-name">Rustic Frame</h3>
-            <div class="frame-details">12" x 8" frame</div>
-            <div class="frame-price">$59</div>
-        </a>
+    <div class="frames-grid" id="framesGrid">
+        <!-- Frames will be dynamically loaded here -->
     </div>
 </body>
 </html>

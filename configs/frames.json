@@ -1,0 +1,123 @@
+{
+  "frames": [
+    {
+      "id": "frame_test_2",
+      "name": "Classic Frame",
+      "filename": "frame_test_2.png",
+      "price": 49,
+      "size": "10\" x 8\"",
+      "description": "A timeless classic frame that complements any photo",
+      "specs": {
+        "frameSize": 1000,
+        "canvasSize": 400,
+        "transparentWidth": 603,
+        "transparentHeight": 603,
+        "transparentX": 198.5,
+        "transparentY": 198.5
+      },
+      "exampleImage": "assets/frames/example_frame_1_1x1_classic_horizontal.png",
+      "category": "classic"
+    },
+    {
+      "id": "modern_frame",
+      "name": "Modern Frame",
+      "filename": "modern_frame.png",
+      "price": 45,
+      "size": "9\" x 9\"",
+      "description": "Clean and contemporary design for modern spaces",
+      "specs": {
+        "frameSize": 1000,
+        "canvasSize": 400,
+        "transparentWidth": 530,
+        "transparentHeight": 753,
+        "transparentX": 235,
+        "transparentY": 123.5
+      },
+      "exampleImage": "assets/frames/example_frame_2_4x6_modern_vertical.jpg",
+      "category": "modern"
+    },
+    {
+      "id": "vintage_frame",
+      "name": "Vintage Frame",
+      "filename": "vintage_frame.png",
+      "price": 69,
+      "size": "11\" x 9\"",
+      "description": "Antique-style frame with ornate details",
+      "specs": {
+        "frameSize": 1000,
+        "canvasSize": 400,
+        "transparentWidth": 837,
+        "transparentHeight": 641,
+        "transparentX": 81.5,
+        "transparentY": 179.5
+      },
+      "exampleImage": "assets/frames/example_frame_3_4x6_vintage_horizontal.png",
+      "category": "vintage"
+    },
+    {
+      "id": "minimalist_frame",
+      "name": "Minimalist Frame",
+      "filename": "minimalist_frame.png",
+      "price": 55,
+      "size": "10\" x 10\"",
+      "description": "Simple and elegant with clean lines",
+      "specs": {
+        "frameSize": 1000,
+        "canvasSize": 400,
+        "transparentWidth": 700,
+        "transparentHeight": 700,
+        "transparentX": 150,
+        "transparentY": 150
+      },
+      "exampleImage": "assets/frames/example_frame_4_5x7_Minimalist_vertical.png",
+      "category": "minimalist"
+    },
+    {
+      "id": "rustic_frame",
+      "name": "Rustic Frame",
+      "filename": "rustic_frame.png",
+      "price": 59,
+      "size": "12\" x 8\"",
+      "description": "Natural wood finish with rustic charm",
+      "specs": {
+        "frameSize": 1000,
+        "canvasSize": 400,
+        "transparentWidth": 900,
+        "transparentHeight": 600,
+        "transparentX": 50,
+        "transparentY": 200
+      },
+      "exampleImage": "assets/frames/example_frame_5_8x10_Rustic_horizontal.png",
+      "category": "rustic"
+    },
+    {
+      "id": "testframe_beta",
+      "name": "testframe_beta",
+      "filename": "testframe_beta",
+      "price": 59,
+      "size": "12\" x 8\"",
+      "description": "Natural wood finish with rustic charm",
+      "specs": {
+        "frameSize": 1000,
+        "canvasSize": 400,
+        "transparentWidth": 900,
+        "transparentHeight": 600,
+        "transparentX": 50,
+        "transparentY": 200
+      },
+      "exampleImage": "assets/frames/example_frame_5_8x10_Rustic_horizontal.png",
+      "category": "rustic"
+    }
+  ],
+  "settings": {
+    "defaultFrame": "frame_test_2",
+    "baseUrl": {
+      "local": "",
+      "production": "/AFrameSite"
+    },
+    "imageRequirements": {
+      "minWidth": 500,
+      "minHeight": 500
+    }
+  }
+}
